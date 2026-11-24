@@ -1,0 +1,2559 @@
+<!DOCTYPE html>
+<!-- ⚠️ ملف متولّد — ماتعدّلوش هنا. عدّل apps-script/HTML وشغّل: python3 tools/build.py -->
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#f3f3f8">
+<title>HR System</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icons/favicon-32.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="HR System">
+<script>var K = {"PROJECT": "اسم المشروع", "WORK_START": "وقت بداية العمل", "WORK_END": "وقت نهاية العمل", "SHIFT": "نوع الشفت", "NSHIFT_START": "بداية شفت الليل", "NSHIFT_END": "نهاية شفت الليل", "NIGHT_FROM": "بداية الفترة الليلية", "NIGHT_TO": "نهاية الفترة الليلية", "F_DAY": "فاكتور نهاري", "F_NIGHT": "فاكتور ليلي", "F_HOL": "فاكتور أجازات رسمية", "RATE": "سعر الساعة", "BREAK_MIN": "مدة الراحة (دقيقة)", "LATE_LIMIT": "حد التأخير (دقيقة)", "CLOSE_FROM": "تقفيل الشهر — من يوم", "CLOSE_TO": "تقفيل الشهر — إلى يوم", "WEEK_OFF": "إجازة أسبوعية", "EMAIL": "إيميل التقرير", "REPORT_DAY": "يوم إرسال التقرير", "TARGET": "هدف ساعات الأوفرتايم الشهري", "SAHAR_TH": "حد ساعات السهر (OT)", "SAHAR_PER": "عدد أيام السهر للورقة", "GRACE_OUT": "دقايق تقريب الانصراف", "GRACE_IN": "دقايق تقريب الحضور", "RULES_OUT": "قواعد تقريب الانصراف", "RULES_IN": "قواعد تقريب الحضور", "EXT_METHOD": "طريقة الوردية الممتدة", "BREAK_PAID": "الراحة مدفوعة", "BREAK_MIN_SHIFT": "أقل مدة لخصم الراحة (ساعة)", "DST_MODE": "حساب تغيير التوقيت الصيفي", "OT_MODE": "طريقة احتساب الأوفرتايم", "FREEZE": "تجميد حتى تاريخ", "LEAVE_QUOTA": "رصيد الإجازات السنوي (يوم)", "OPEN_THR": "حد تحذير الشفت المفتوح (ساعة)", "ABSENT_AT": "تنبيه الغياب بعد الساعة", "WEEKLY_DAY": "يوم الملخص الأسبوعي", "PRECLOSE_DAYS": "تنبيه قبل التقفيل (أيام)", "REMIND_MISSING": "تذكير الأيام الناقصة", "LEAVE_PAPER_TYPES": "إجازات محتاجة ورقة", "IMG_PRIVACY": "خصوصية الصور", "CONFIRMED_ABSENT": "أيام غياب مؤكدة", "LAST_REPORT": "آخر تقرير مرسل", "LAST_MISSING_REMIND": "آخر تذكير أيام ناقصة", "LAST_ABSENT_ALERT": "آخر تنبيه غياب", "LAST_WEEKLY": "آخر ملخص أسبوعي", "LAST_PRECLOSE": "آخر تنبيه تقفيل", "LAST_FORGOT": "آخر تنبيه نسيان", "LAST_SAHAR_ALERT": "آخر تنبيه سهر", "OLD_FORM_URL": "رابط النموذج"};</script>
+<script src="api.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script>
+/* ═══════════════════════════════════════════════════════
+   🧩 الأيقونات (SVG بخط واحد) + 🌗 الثيم — بيشتغلوا في الـ <head> قبل رسم الصفحة
+   ═══════════════════════════════════════════════════════ */
+var ICONS={
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  login:'<path d="M15 3h3a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3h-3"/><path d="M10 17l5-5-5-5M15 12H3"/>',
+  logout:'<path d="M9 21H6a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3h3"/><path d="M16 17l5-5-5-5M21 12H9"/>',
+  home:'<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/>',
+  calendar:'<rect x="3" y="4.5" width="18" height="16.5" rx="3"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/>',
+  report:'<path d="M14 2.5H7A2.5 2.5 0 0 0 4.5 5v14A2.5 2.5 0 0 0 7 21.5h10a2.5 2.5 0 0 0 2.5-2.5V8z"/><path d="M14 2.5V8h5.5M8.5 13h7M8.5 17h5"/>',
+  settings:'<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>',
+  sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+  moon:'<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
+  auto:'<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/>',
+  umbrella:'<path d="M22 12a10 10 0 0 0-20 0z"/><path d="M12 12v7a2 2 0 0 0 4 0M12 2v1"/>',
+  camera:'<path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13.5" r="3.5"/>',
+  clip:'<path d="m21.4 11-9.2 9.2a6 6 0 0 1-8.5-8.5l8.6-8.5A4 4 0 1 1 18 8.8l-8.6 8.6a2 2 0 0 1-2.8-2.8l8.5-8.5"/>',
+  upload:'<path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/>',
+  save:'<path d="M5 3h11l3 3v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M7 3v5h8V3M7 21v-7h10v7"/>',
+  refresh:'<path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/>',
+  calc:'<rect x="5" y="2.5" width="14" height="19" rx="2.5"/><path d="M8.5 6.5h7M8.5 11h.01M12 11h.01M15.5 11h.01M8.5 14.5h.01M12 14.5h.01M15.5 14.5h.01M8.5 18h.01M12 18h.01M15.5 18h.01"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
+  trash:'<path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/>',
+  eye:'<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+  mail:'<rect x="3" y="5" width="18" height="14" rx="3"/><path d="m3 7 9 6 9-6"/>',
+  globe:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/>',
+  wallet:'<rect x="3" y="6" width="18" height="13" rx="3"/><path d="M3 10h18"/><circle cx="16.5" cy="14.5" r="1.2"/>',
+  timer:'<circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M10 2h4"/>',
+  bolt:'<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
+  building:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 21v-4h6v4M8 7h.01M12 7h.01M16 7h.01M8 11h.01M12 11h.01M16 11h.01"/>',
+  star:'<path d="M12 3l2.4 5.6 6.1.7-4.6 4.1 1.3 6L12 16.3 6.8 19.4l1.3-6L3.5 9.3l6.1-.7z"/>',
+  target:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>',
+  clipboard:'<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h6M9 18h3"/>',
+  chart:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+  list:'<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+  lock:'<rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+  unlock:'<rect x="4" y="11" width="16" height="10" rx="2.5"/><path d="M8 11V7a4 4 0 0 1 7.5-2"/>',
+  bell:'<path d="M6 16v-5a6 6 0 0 1 12 0v5l2 2H4z"/><path d="M10 21a2 2 0 0 0 4 0"/>',
+  flask:'<path d="M9 3h6M10 3v6L4.5 19a1.5 1.5 0 0 0 1.3 2h12.4a1.5 1.5 0 0 0 1.3-2L14 9V3"/><path d="M7 15h10"/>',
+  coffee:'<path d="M4 8h13v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M17 10h1.5a2.5 2.5 0 0 1 0 5H17M8 2v3M12 2v3"/>',
+  help:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01"/>',
+  x:'<path d="M18 6 6 18M6 6l12 12"/>',
+  check:'<path d="M5 12.5 10 17 19 7"/>',
+  undo:'<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>',
+  pin:'<path d="M12 17v5M9 3h6l-1 6 3 3v2H7v-2l3-3z"/>',
+  link:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+  ban:'<circle cx="12" cy="12" r="9"/><path d="M5.6 5.6l12.8 12.8"/>',
+  image:'<rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5L5 20"/>',
+  alert:'<path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17h.01"/>',
+  offline:'<path d="M2 2l20 20M8.5 16.5a5 5 0 0 1 7 0M5 13a10 10 0 0 1 5.2-2.8M19 13a10 10 0 0 0-2.4-1.7M2 8.8a15 15 0 0 1 4.2-2.7M22 8.8A15 15 0 0 0 10.7 5M12 20h.01"/>',
+  shield:'<path d="M12 3 4 6v6c0 5 3.4 8.3 8 9 4.6-.7 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/>'
+};
+function ic(n, cls){ return '<svg class="ic'+(cls?' '+cls:'')+'" viewBox="0 0 24 24" aria-hidden="true">'+(ICONS[n]||ICONS.help)+'</svg>'; }
+
+/* الإيموجي في أول النصوص (عناوين/أزرار/ليبلات) بتتحوّل لأيقونات SVG تلقائي — حتى في اللي بيتكتب من الجافاسكريبت */
+var EMOJI_IC={'⏰':'clock','🏠':'logout','☀️':'sun','🌙':'moon','🏖️':'umbrella','📷':'camera','📸':'camera','📎':'clip','📤':'upload','💾':'save','🔄':'refresh','🧮':'calc','➕':'plus','✏️':'edit','🗑️':'trash','👁️':'eye','📧':'mail','🌐':'globe','💰':'wallet','⏱️':'timer','⚡':'bolt','🏗️':'building','🕐':'clock','🕌':'star','🎯':'target','📋':'clipboard','📊':'chart','📅':'calendar','📑':'report','📜':'list','🔒':'lock','🔓':'unlock','🔔':'bell','🧪':'flask','☕':'coffee','❓':'help','✍️':'edit','❌':'x','✅':'check','↩️':'undo','📌':'pin','🔐':'lock','🔗':'link','⛔':'ban','📲':'login','⚠️':'alert','✕':'x','🗓️':'calendar'};
+var EMOJI_RE=new RegExp('^\\s*('+Object.keys(EMOJI_IC).map(function(e){ return e.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/️/g,'\\uFE0F?'); }).join('|')+')\\uFE0F?\\s*');
+var IC_SEL='.tl,.kv > span,.ct,.btn,.mini,.logtools button,.pager button,.lv-h button,.ms-b button,.ms-bulk button,.f > label,.sm-hd span,.sheet-hd span,.need .nh,.need .ni > span:first-child,.chk,.money .l,.money .sl,.holrow button,.xbtn,.sm-x,.undo-bar button,.io-l,.logrow .dt,.logrow .mid > span,.ms-d';
+function hydrateIcons_(root){
+  root = root || document;
+  var els = root.querySelectorAll ? root.querySelectorAll(IC_SEL) : [];
+  var list = Array.prototype.slice.call(els);
+  if (root.matches && root.matches(IC_SEL)) list.push(root);
+  list.forEach(function(el){
+    var first = el.firstChild;
+    while (first && first.nodeType===3 && !first.nodeValue.trim()) first = first.nextSibling;
+    if (!first) return;
+    if (first.nodeType===1 && first.tagName.toLowerCase()==='input') { first = first.nextSibling; }   // <label class="chk"><input> 🕌 ...
+    if (!first || first.nodeType!==3) return;
+    var m = first.nodeValue.match(EMOJI_RE); if (!m) return;
+    var key = m[1].replace(/️/g,''), name = EMOJI_IC[m[1]] || EMOJI_IC[key] || EMOJI_IC[key+'️'];
+    if (!name) return;
+    first.nodeValue = first.nodeValue.slice(m[0].length);
+    var span = document.createElement('span'); span.innerHTML = ic(name);
+    el.insertBefore(span.firstChild, first);
+  });
+}
+(function(){
+  var pending=false;
+  function boot(){
+    hydrateIcons_(document);
+    if (!window.MutationObserver) return;
+    var queue=[];   // كل التغييرات بتتجمّع وتتعالج في نفس الفريم — مفيش تغيير بيضيع
+    new MutationObserver(function(muts){
+      muts.forEach(function(m){ var t=m.target.nodeType===1?m.target:m.target.parentElement; if(t && queue.indexOf(t)<0) queue.push(t); });
+      if (pending) return; pending=true;
+      requestAnimationFrame(function(){ pending=false;
+        var seen=queue; queue=[];
+        seen.forEach(function(t){ if(!t.isConnected) return; hydrateIcons_(t); var p=t.closest && t.closest(IC_SEL); if(p && p!==t) hydrateIcons_(p); });
+      });
+    }).observe(document.body,{childList:true,subtree:true,characterData:true});
+  }
+  if (document.readyState==='loading') document.addEventListener('DOMContentLoaded', boot); else boot();
+})();
+
+/* 🌗 الثيم: تلقائي (حسب الجهاز) / ليلي / فاتح — بيتحفظ على الجهاز */
+var THEME_KEY='hr_theme';
+function themeMode_(){ try{ return localStorage.getItem(THEME_KEY)||'auto'; }catch(e){ return 'auto'; } }
+function applyTheme_(mode){
+  var mq = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
+  var dark = mode==='dark' || (mode==='auto' && !!(mq && mq.matches));
+  var root=document.documentElement;
+  root.setAttribute('data-theme', dark?'dark':'light');
+  root.setAttribute('data-mode', mode);
+  var mc=document.querySelector('meta[name="theme-color"]'); if(mc) mc.setAttribute('content', dark?'#000000':'#f3f3f8');
+  var b=document.getElementById('themeBtn');
+  if(b){ b.innerHTML = ic(mode==='dark'?'moon':(mode==='light'?'sun':'auto')); var t='الثيم: '+(mode==='dark'?'ليلي':(mode==='light'?'فاتح':'تلقائي حسب الجهاز')); b.title=t; b.setAttribute('aria-label',t); }
+}
+function cycleTheme(){
+  var cur=themeMode_(), nx = cur==='auto' ? 'dark' : (cur==='dark' ? 'light' : 'auto');
+  try{ localStorage.setItem(THEME_KEY, nx); }catch(e){}
+  var root=document.documentElement; root.classList.add('theming');
+  applyTheme_(nx);
+  setTimeout(function(){ root.classList.remove('theming'); }, 450);
+  if(typeof notify==='function') notify('ok', nx==='dark' ? '🌙 الوضع الليلي' : (nx==='light' ? '☀️ الوضع الفاتح' : '🌗 تلقائي حسب الجهاز'));
+}
+applyTheme_(themeMode_());
+(function(){
+  var mq = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+  if(!mq) return;
+  var h=function(){ if(themeMode_()==='auto') applyTheme_('auto'); };
+  if(mq.addEventListener) mq.addEventListener('change', h); else if(mq.addListener) mq.addListener(h);
+})();
+document.addEventListener('DOMContentLoaded', function(){ applyTheme_(themeMode_()); });
+</script>
+<style>
+/* ═══════════════════════════════════════════════════════
+   🎨 Design System v7.5 — مشترك بين WebApp و SettingsSidebar
+   فاتح (افتراضي) + ليلي [data-theme=dark] — كل الألوان متغيرات.
+   الألوان متظبطة على تباين WCAG AA (4.5:1) للنصوص الصغيرة في الوضعين.
+   ═══════════════════════════════════════════════════════ */
+:root{
+  --font:'Readex Pro','IBM Plex Sans Arabic',system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+  --bg:#f3f3f8; --glow1:rgba(124,58,237,.12); --glow2:rgba(8,145,178,.10);
+  --card:#ffffff; --card2:#f6f6fb; --card3:#ebebf3;
+  --line:rgba(17,17,39,.08); --line2:rgba(17,17,39,.14);
+  --txt:#0c0c16; --muted:#52526a; --faint:#6f6f86;
+  --pri:#6d28d9; --pri2:#0e7490; --accent:var(--pri);
+  --green:#047857; --amber:#a3470a; --red:#be123c; --blue:#1d4ed8; --pink:#be185d; --cyan:#0e7490;
+  --pri-s:rgba(109,40,217,.09);  --pri-l:rgba(109,40,217,.30);
+  --green-s:rgba(4,120,87,.09);  --green-l:rgba(4,120,87,.30);
+  --amber-s:rgba(163,71,10,.09); --amber-l:rgba(163,71,10,.30);
+  --red-s:rgba(190,18,60,.08);   --red-l:rgba(190,18,60,.30);
+  --blue-s:rgba(29,78,216,.09);  --pink-s:rgba(190,24,93,.09); --cyan-s:rgba(14,116,144,.09);
+  --grad:linear-gradient(135deg,#6d28d9 0%,#4338ca 52%,#0e7490 100%);
+  --grad-green:linear-gradient(135deg,#047857 0%,#0f766e 55%,#0e7490 100%);
+  --grad-warn:linear-gradient(135deg,#be123c,#c2410c);
+  --glass:rgba(255,255,255,.75);
+  --overlay:rgba(12,12,24,.45);
+  --shadow:0 1px 2px rgba(20,20,50,.04),0 10px 30px -14px rgba(20,20,50,.14);
+  --shadow-lg:0 24px 50px -20px rgba(20,20,50,.38);
+  --radius:22px; --r-md:16px; --r-sm:12px;
+  color-scheme:light;
+}
+[data-theme="dark"]{
+  --bg:#000000; --glow1:rgba(139,92,246,.20); --glow2:rgba(34,211,238,.11);
+  --card:#0b0b0f; --card2:#14141a; --card3:#1e1e27;
+  --line:rgba(255,255,255,.07); --line2:rgba(255,255,255,.13);
+  --txt:#f4f4f6; --muted:#a8a8b8; --faint:#8a8a9e;
+  --pri:#b4a0ff; --pri2:#22d3ee;
+  --green:#34d399; --amber:#fbbf24; --red:#fb7185; --blue:#7cb0ff; --pink:#f472b6; --cyan:#22d3ee;
+  --pri-s:rgba(180,160,255,.13); --pri-l:rgba(180,160,255,.34);
+  --green-s:rgba(52,211,153,.12); --green-l:rgba(52,211,153,.32);
+  --amber-s:rgba(251,191,36,.12); --amber-l:rgba(251,191,36,.32);
+  --red-s:rgba(251,113,133,.12);  --red-l:rgba(251,113,133,.34);
+  --blue-s:rgba(124,176,255,.13); --pink-s:rgba(244,114,182,.13); --cyan-s:rgba(34,211,238,.12);
+  --glass:rgba(10,10,14,.75);
+  --overlay:rgba(0,0,0,.72);
+  --shadow:0 0 0 1px rgba(255,255,255,.03),0 14px 34px -18px rgba(0,0,0,.95);
+  --shadow-lg:0 26px 60px -20px rgba(0,0,0,1);
+  color-scheme:dark;
+}
+
+/* ═══ الأساس ═══ */
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{background:var(--bg)}
+body{font-family:var(--font);background:transparent;color:var(--txt);direction:rtl;line-height:1.55;-webkit-font-smoothing:antialiased}
+body::before{content:'';position:fixed;inset:0 0 auto 0;height:75vh;pointer-events:none;z-index:-1;
+  background:radial-gradient(55% 45% at 88% -5%,var(--glow1),transparent 70%),radial-gradient(45% 40% at 5% 5%,var(--glow2),transparent 70%)}
+html.theming *,html.theming *::before{transition:background-color .35s,border-color .35s,color .35s,box-shadow .35s!important}
+button,input,select{font-family:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--pri);outline-offset:2px;border-radius:8px}
+.muted{color:var(--muted)}
+.sr{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+#h_today{direction:ltr;unicode-bidi:isolate;display:inline-block;font-variant-numeric:tabular-nums}
+.pane{display:none}.pane.on{display:block;animation:fadeUp .35s cubic-bezier(.2,.8,.2,1)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@keyframes popIn{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+@keyframes sheetUp{from{opacity:.4;transform:translateY(40px)}to{opacity:1;transform:none}}
+@keyframes sp{to{transform:rotate(360deg)}}
+@keyframes toastIn{from{opacity:0;transform:translate(-50%,-10px)}to{opacity:1;transform:translate(-50%,0)}}
+@keyframes okPulse{0%{transform:scale(1)}35%{transform:scale(1.04)}100%{transform:scale(1)}}
+@keyframes shimmer{to{background-position:-200% 0}}
+
+/* ═══ الأيقونات (SVG) ═══ */
+.ic{width:1.15em;height:1.15em;flex-shrink:0;vertical-align:-.2em;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ct .ic{width:18px;height:18px;color:var(--pri)}
+.btn .ic{width:18px;height:18px}
+
+/* ═══ لوجو + زرار الثيم ═══ */
+.logo{width:40px;height:40px;border-radius:13px;background:var(--grad);color:#fff;display:grid;place-items:center;flex-shrink:0;box-shadow:0 8px 20px -8px rgba(109,40,217,.85)}
+.logo .ic{width:22px;height:22px}
+.theme-btn{width:40px;height:40px;border-radius:13px;border:1px solid var(--line2);background:var(--card2);color:var(--txt);cursor:pointer;display:grid;place-items:center;flex-shrink:0;transition:transform .2s}
+.theme-btn .ic{width:20px;height:20px}
+.theme-btn:active{transform:scale(.9) rotate(-15deg)}
+
+/* ═══ الكروت والنصوص ═══ */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:12px;box-shadow:var(--shadow)}
+.ct{font-size:13.5px;font-weight:700;color:var(--txt);margin-bottom:12px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.hint{font-size:11px;color:var(--faint);margin-top:4px;line-height:1.75}
+.soft{border-radius:var(--r-md);padding:12px;border:1px solid transparent}
+.soft.amber{background:var(--amber-s);border-color:var(--amber-l)}
+.soft.red{background:var(--red-s);border-color:var(--red-l)}
+
+/* ═══ الحقول ═══ */
+.f{margin-bottom:12px}
+.f > label{display:flex;align-items:center;gap:5px;font-size:11.5px;color:var(--muted);font-weight:600;margin-bottom:5px}
+.f input,.f select{width:100%;padding:11px 13px;border:1px solid var(--line2);border-radius:var(--r-sm);font-size:14px;background:var(--card2);color:var(--txt);transition:border-color .15s,box-shadow .15s,background .15s}
+.f input::placeholder{color:var(--faint)}
+.f input[type=number],.f input[type=time],.f input[type=date],.f input[type=email]{direction:ltr;text-align:right}
+.f input:focus,.f select:focus{outline:0;border-color:var(--pri);background:var(--card);box-shadow:0 0 0 4px var(--pri-s)}
+.dhint{font-size:11px;color:var(--pri);font-weight:600;margin-top:4px;min-height:1px}
+.row{display:flex;gap:10px}.row .f{flex:1;min-width:0}
+.action-row{display:flex;gap:8px;align-items:flex-end}
+.chk{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:12.5px;font-weight:600;color:var(--txt)}
+.chk input{width:18px;height:18px;margin:0;accent-color:var(--pri);flex-shrink:0}
+
+/* ═══ رفع الصور (بديل "Choose File") ═══ */
+.upl{position:relative;display:flex;align-items:center;gap:10px;padding:10px 12px;border:1.5px dashed var(--line2);border-radius:var(--r-md);background:var(--card2);cursor:pointer;transition:border-color .15s,background .15s;min-height:56px}
+.upl:hover{border-color:var(--pri-l)}
+.upl input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
+.upl-ic{width:38px;height:38px;border-radius:12px;background:var(--pri-s);color:var(--pri);display:grid;place-items:center;flex-shrink:0}
+.upl-ic .ic{width:20px;height:20px}
+.upl-txt{flex:1;min-width:0;line-height:1.35}
+.upl-t{display:block;font-size:13px;font-weight:700;color:var(--txt)}
+.upl-s{display:block;font-size:11px;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.upl-pv{width:42px;height:42px;border-radius:10px;object-fit:cover;display:none;border:1px solid var(--line2)}
+.upl-x{position:relative;z-index:2;width:30px;height:30px;border-radius:50%;border:0;background:var(--card3);color:var(--muted);display:none;place-items:center;cursor:pointer}
+.upl.has{border-style:solid;border-color:var(--green-l);background:var(--green-s)}
+.upl.has .upl-ic{background:var(--green-s);color:var(--green)}
+.upl.has .upl-x{display:grid}
+.upl.has.pv .upl-pv{display:block}.upl.has.pv .upl-ic{display:none}
+
+/* ═══ النهاردة: حضور/انصراف (مشترك) ═══ */
+.io{display:flex;gap:8px;margin-top:12px}
+.io-b{flex:1;background:var(--card2);border:1px solid var(--line);border-radius:16px;padding:10px 12px}
+.io-l{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)}
+.io-v{font-size:24px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
+.hero-act .io-b,.hero .io-b{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.22)}
+.hero-act .io-l,.hero .io-l{color:rgba(255,255,255,.9)}
+.hero-act .today-chip,.hero .today-chip{background:rgba(255,255,255,.16);color:#fff}
+
+/* ═══ الأزرار ═══ */
+.btn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;padding:13px 14px;border:0;border-radius:14px;font-size:14px;font-weight:700;cursor:pointer;margin-bottom:8px;transition:transform .12s,filter .15s,box-shadow .2s}
+.btn:active{transform:scale(.97)}
+.btn:disabled{opacity:.55;cursor:not-allowed;transform:none}
+.bp{background:var(--grad);color:#fff;box-shadow:0 10px 22px -10px rgba(109,40,217,.8)}
+.bg{background:var(--grad-green);color:#fff;box-shadow:0 10px 22px -10px rgba(4,120,87,.8)}
+.bs{background:var(--pri-s);color:var(--pri)}
+.bo{background:var(--amber-s);color:var(--amber)}
+.br{background:var(--red-s);color:var(--red)}
+.btn:hover:not(:disabled){filter:brightness(1.07)}
+.mini{display:inline-flex;align-items:center;gap:4px;background:var(--pri-s);color:var(--pri);border:0;border-radius:9px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer}
+.mini .ic{width:13px;height:13px}
+
+/* ═══ كارت الفلوس ═══ */
+.money{position:relative;overflow:hidden;isolation:isolate;background:var(--grad-green);color:#fff;border-radius:var(--radius);padding:22px 16px 16px;text-align:center;margin-bottom:12px;box-shadow:0 20px 44px -20px rgba(4,120,87,.75)}
+.money::before{content:'';position:absolute;z-index:-1;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.26),transparent 65%);top:-120px;left:-70px}
+.money::after{content:'';position:absolute;z-index:-1;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(167,139,250,.40),transparent 65%);bottom:-100px;right:-50px}
+.money .n{font-size:38px;font-weight:800;line-height:1;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+.money .l{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px;opacity:.92;margin-top:8px}
+.money .split{display:flex;gap:8px;margin-top:16px}
+.money .si{flex:1;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.22);border-radius:14px;padding:8px 4px}
+.money .sv{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums}
+.money .sl{display:flex;align-items:center;justify-content:center;gap:4px;font-size:10.5px;opacity:.9;margin-top:2px}
+
+/* ═══ الهدف ═══ */
+.target .top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px}
+.target .cur{font-size:30px;font-weight:800;line-height:1.1;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;font-variant-numeric:tabular-nums}
+[data-theme="dark"] .target .cur{background:linear-gradient(135deg,#c4b5fd,#22d3ee);-webkit-background-clip:text;background-clip:text}
+.target .goal{font-size:12px;color:var(--muted)}
+.target .msg{text-align:center;margin-top:10px;font-size:13px;font-weight:700}
+
+/* ═══ الإحصائيات ═══ */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.stat{background:var(--card2);border:1px solid var(--line);border-radius:16px;padding:12px 6px;text-align:center}
+.stat .n{font-size:22px;font-weight:800;color:var(--pri);line-height:1.25;font-variant-numeric:tabular-nums}
+.stat .l{font-size:10.5px;color:var(--muted);margin-top:3px}
+.stat.g .n{color:var(--green)}
+.stat.r .n{color:var(--red)}
+.stat.clk{cursor:pointer;transition:transform .1s,border-color .15s}
+.stat.clk:hover{border-color:var(--pri-l)}
+.stat.clk:active{transform:scale(.95)}
+
+/* ═══ شريط التقدّم ═══ */
+.bar{background:var(--card3);border-radius:99px;height:10px;overflow:hidden}
+.bar .fill{height:100%;border-radius:99px;transition:width .6s cubic-bezier(.2,.8,.2,1);background:linear-gradient(90deg,#7c3aed,#0891b2,#10b981)}
+
+/* ═══ السجل ═══ */
+.logrow{background:var(--card2);border:1px solid var(--line);border-radius:16px;padding:12px 13px;margin-bottom:8px}
+.logrow.warn{border-color:var(--red-l);background:var(--red-s)}
+.logrow .top{display:flex;justify-content:space-between;align-items:center;gap:6px;flex-wrap:wrap}
+.logrow .top > span:last-child{display:flex;align-items:center;gap:5px;flex-wrap:wrap}
+.logrow .dt{font-weight:700;font-size:13px;font-variant-numeric:tabular-nums}
+.logrow .mid{display:flex;gap:14px;margin-top:7px;font-size:12px;color:var(--muted);flex-wrap:wrap;font-variant-numeric:tabular-nums}
+.logrow .ot{color:var(--green);font-weight:700}
+.logrow .imgs{display:flex;gap:6px;margin-top:9px}
+.logrow .imgs a{display:block;width:48px;height:48px;border-radius:11px;overflow:hidden;border:1px solid var(--line2);background:linear-gradient(90deg,var(--card3),var(--card2),var(--card3));background-size:200% 100%;animation:shimmer 1.2s linear infinite}
+.logrow .imgs img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .25s}
+.logrow .imgs img.ld{opacity:1}
+.logrow .imgs a.done{animation:none}
+.logrow .imgs a.bad{display:grid;place-items:center;color:var(--faint)}
+.logrow .mid > span{display:inline-flex;align-items:center;gap:4px}
+.logrow .dt{display:inline-flex;align-items:center;gap:5px}
+.logrow .mid .ic,.logrow .dt .ic{width:14px;height:14px;color:var(--faint)}
+.need .ni > span:first-child{display:inline-flex;align-items:center;gap:6px}
+.need .ni .ic{color:var(--amber)}
+.badge{display:inline-block;font-size:10px;padding:3px 9px;border-radius:99px;font-weight:700}
+.badge.work{background:var(--blue-s);color:var(--blue)}
+.badge.hol{background:var(--amber-s);color:var(--amber)}
+.badge.leave{background:var(--pink-s);color:var(--pink)}
+.badge.warn{background:var(--red-s);color:var(--red)}
+.badge.paper{background:var(--cyan-s);color:var(--cyan)}
+.badge.frz{background:var(--pri-s);color:var(--pri)}
+.pager{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:10px}
+.pager button{background:var(--pri-s);color:var(--pri);border:0;border-radius:11px;padding:8px 11px;font-weight:700;cursor:pointer;font-size:12px;white-space:nowrap}
+.pager button:disabled{opacity:.35;cursor:default}
+.pager .pl{flex:1;text-align:center;font-size:12px;font-weight:700}
+.logtools{display:flex;gap:6px;margin-bottom:10px}
+.logtools button{flex:1;display:flex;align-items:center;justify-content:center;gap:5px;background:var(--amber-s);color:var(--amber);border:0;border-radius:11px;padding:9px 6px;font-weight:700;font-size:12px;cursor:pointer}
+.logtools button.alt{background:var(--pri-s);color:var(--pri)}
+
+/* ═══ تنبيهات ═══ */
+.notice{background:var(--amber-s);color:var(--amber);border:1px solid var(--amber-l);border-radius:14px;padding:10px 12px;font-size:12px;font-weight:600;margin-bottom:10px;line-height:1.7}
+.notice.err{background:var(--red-s);color:var(--red);border-color:var(--red-l)}
+.notice.info{background:var(--pri-s);color:var(--pri);border-color:var(--pri-l)}
+.alert-warn{background:var(--amber-s);color:var(--amber);border:1px solid var(--amber-l);border-radius:14px;padding:10px 12px;margin-top:10px;font-size:12px;font-weight:700}
+.openbar{background:var(--green-s);color:var(--green);border:1px solid var(--green-l);border-radius:16px;padding:11px 12px;font-size:13px;font-weight:700;text-align:center;margin-bottom:12px}
+.openbar.stale{background:var(--red-s);color:var(--red);border-color:var(--red-l)}
+
+/* ═══ أيام السهر / الإجازات (تاجز) ═══ */
+.sh-tag{font-size:12px;padding:6px 11px;border-radius:99px;font-weight:700;cursor:pointer;user-select:none;border:1.5px solid transparent;font-variant-numeric:tabular-nums;transition:transform .1s,background .15s}
+.sh-tag:active{transform:scale(.94)}
+.sh-tag.done{background:var(--pri-s);color:var(--pri)}
+.sh-tag.pending{background:var(--card3);color:var(--muted)}
+.sh-tag.sel{background:var(--grad);color:#fff;border-color:transparent;box-shadow:0 6px 14px -6px rgba(109,40,217,.75)}
+.sh-tag.old:not(.sel){border-color:var(--amber)}
+
+/* ═══ "محتاج انتباهك" + المهام + حالة النهاردة ═══ */
+.need{background:linear-gradient(135deg,var(--amber-s),var(--red-s)),var(--card);border:1px solid var(--amber-l);border-radius:var(--radius);padding:12px 14px;margin-bottom:12px}
+.need .nh{display:flex;align-items:center;gap:6px;font-size:12.5px;font-weight:800;color:var(--amber);margin-bottom:4px}
+.need .ni{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 8px;border-top:1px dashed var(--amber-l);font-size:13px;font-weight:600;color:var(--txt);cursor:pointer;border-radius:10px}
+.need .nh + .ni{border-top:0}
+.need .ni:active{background:var(--amber-s)}
+.need .ni .go{color:var(--amber);font-weight:800;font-size:16px}
+.ms-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.ms-row:last-child{border-bottom:0}
+.ms-d{font-weight:700;font-size:13px}
+.ms-d small{display:block;font-weight:400;color:var(--muted);font-size:11px;font-variant-numeric:tabular-nums}
+.ms-b{display:flex;gap:5px;flex-wrap:wrap}
+.ms-b button,.ms-bulk button{display:inline-flex;align-items:center;justify-content:center;gap:4px;border:0;border-radius:10px;padding:7px 10px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.ms-b .l,.ms-bulk button{background:var(--green-s);color:var(--green)}
+.ms-b .f2{background:var(--pri-s);color:var(--pri)}
+.ms-b .a,.ms-bulk button.a{background:var(--red-s);color:var(--red)}
+.ms-b button:disabled,.ms-bulk button:disabled{opacity:.5}
+.ms-bulk{display:flex;gap:6px;margin-top:10px}
+.ms-bulk button{flex:1;padding:10px}
+.lv-g{margin-top:10px}
+.lv-h{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;font-weight:700;margin-bottom:6px;gap:6px}
+.lv-h small{font-weight:400;color:var(--muted)}
+.lv-h button{border:0;background:var(--pri-s);color:var(--pri);border-radius:9px;padding:5px 10px;font-size:11px;font-weight:700;cursor:pointer}
+.lv-c{display:flex;flex-wrap:wrap;gap:6px}
+.today-chip{font-size:12.5px;font-weight:700;padding:9px 12px;border-radius:14px;margin-top:10px;background:var(--card3);color:var(--muted)}
+.today-chip.off{background:var(--amber-s);color:var(--amber)}
+.today-chip.done{background:var(--pri-s);color:var(--pri)}
+
+/* ═══ الإعدادات الإضافية ═══ */
+.fz-state{font-size:12px;font-weight:600;padding:10px 12px;border-radius:14px;background:var(--card3);color:var(--muted);margin-bottom:10px;line-height:1.7}
+.fz-state.on{background:var(--pri-s);color:var(--pri)}
+.pv-res{font-size:12.5px;line-height:1.9;background:var(--green-s);border:1px solid var(--green-l);border-radius:14px;padding:10px 12px;margin-top:8px;display:none;font-variant-numeric:tabular-nums}
+.wo-box{display:flex;flex-wrap:wrap;gap:6px}
+.wo-box label{background:var(--card2);border:1px solid var(--line2);border-radius:99px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background .15s,border-color .15s,color .15s}
+.wo-box label.on{background:var(--pri-s);border-color:var(--pri-l);color:var(--pri)}
+.wo-box input{width:auto!important;margin:0;accent-color:var(--pri)}
+.seg{display:flex;gap:6px}
+.seg .btn{margin:0}
+
+/* ═══ الأعياد ═══ */
+.holrow{display:flex;gap:6px;align-items:center;background:var(--card2);border:1px solid var(--line);border-radius:14px;padding:7px;margin-bottom:6px}
+.holrow.approx{border-color:var(--amber-l);background:var(--amber-s)}
+.holrow.new{border-color:var(--green-l);background:var(--green-s)}
+.holrow input{padding:8px;font-size:12px;border:1px solid var(--line2);border-radius:10px;background:var(--card);color:var(--txt);min-width:0}
+.holrow input:focus{outline:0;border-color:var(--pri)}
+.holrow input[type=date]{width:132px;direction:ltr}
+.holrow input[type=text]{flex:1;min-width:50px}
+.holrow button{display:grid;place-items:center;border:0;border-radius:10px;padding:8px 10px;font-size:13px;cursor:pointer}
+.hsave{background:var(--green-s);color:var(--green)}
+.hdel{background:var(--red-s);color:var(--red)}
+
+/* ═══ النوافذ ═══ */
+.sm-back,.sheet-back{position:fixed;inset:0;background:var(--overlay);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);z-index:9999;display:none;align-items:center;justify-content:center;padding:16px}
+.sheet-back{z-index:100}
+.sm-box,.sheet{background:var(--card);color:var(--txt);border:1px solid var(--line2);border-radius:24px;width:100%;max-width:440px;max-height:86vh;box-shadow:var(--shadow-lg);animation:popIn .24s cubic-bezier(.2,.8,.2,1)}
+.sm-box{display:flex;flex-direction:column;overflow:hidden}
+.sheet{padding:18px;overflow-y:auto;overscroll-behavior:contain}
+.sheet-hd{position:sticky;top:-18px;z-index:2;display:flex;justify-content:space-between;align-items:center;margin:-18px -18px 14px;padding:16px 18px 12px;background:var(--card);border-bottom:1px solid var(--line)}
+.sheet-hd span{display:flex;align-items:center;gap:7px;font-size:15px;font-weight:800}
+.sheet .card{box-shadow:none;background:var(--card2);scroll-margin-top:72px}
+.sm-hd{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line);font-weight:800;font-size:14.5px}
+.sm-x,.xbtn{width:34px;height:34px;border-radius:50%;border:0;background:var(--card3);color:var(--muted);font-size:14px;cursor:pointer;display:grid;place-items:center;flex-shrink:0}
+.sm-sum{padding:9px 16px;font-size:12px;color:var(--muted);background:var(--card2)}
+.sm-list{overflow-y:auto;padding:4px 0}
+.sm-row{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:10px 16px;border-bottom:1px solid var(--line);font-size:13px}
+.sm-row:last-child{border-bottom:0}
+.sm-d{font-weight:700;font-variant-numeric:tabular-nums}
+.sm-d small{display:block;font-weight:400;color:var(--muted);font-size:11px}
+.sm-t{color:var(--muted);font-size:12px;direction:ltr;text-align:left;font-variant-numeric:tabular-nums}
+.sm-v{font-weight:800;color:var(--pri);white-space:nowrap;font-variant-numeric:tabular-nums}
+.sm-empty{text-align:center;padding:28px 16px;color:var(--muted)}
+.au-next{background:var(--amber-s)}
+.au-undone{opacity:.5;text-decoration:line-through}
+@media (max-width:520px){
+  .sheet-back.bottom{align-items:flex-end;padding:0}
+  .sheet-back.bottom .sheet{max-width:none;border-radius:26px 26px 0 0;max-height:88vh;padding-bottom:calc(18px + env(safe-area-inset-bottom,0px));animation:sheetUp .3s cubic-bezier(.2,.8,.2,1)}
+}
+
+/* ═══ شريط التراجع + توست + تحميل ═══ */
+.undo-bar{position:fixed;left:12px;right:12px;bottom:76px;z-index:9998;background:#111118;color:#fff;border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:10px 14px;display:none;align-items:center;justify-content:space-between;gap:10px;font-size:13px;font-weight:600;box-shadow:var(--shadow-lg);max-width:460px;margin:0 auto}
+[data-theme="dark"] .undo-bar{background:#1e1e27}
+.undo-bar button{display:inline-flex;align-items:center;gap:5px;background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#111;border:0;border-radius:11px;padding:7px 13px;font-weight:800;cursor:pointer;font-size:13px}
+.toast{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);padding:12px 18px;border-radius:16px;font-size:13px;font-weight:700;z-index:10001;animation:toastIn .3s cubic-bezier(.2,.8,.2,1);max-width:92%;text-align:center;box-shadow:var(--shadow-lg);white-space:pre-line;color:#fff}
+.toast.ok{background:linear-gradient(135deg,#047857,#0f766e)}
+.toast.er{background:linear-gradient(135deg,#be123c,#e11d48)}
+.ld{text-align:center;padding:40px 20px;color:var(--muted)}
+.sp{width:30px;height:30px;border:3px solid var(--card3);border-top-color:var(--pri);border-radius:50%;animation:sp .7s linear infinite;margin:0 auto 10px}
+
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+
+/* ═══════════════════════════════════════════════════════════════
+   🖤 v7.5 — نفس ستايل تطبيق المحفظة: أسود صافي، أرقام ضخمة، لوحات مسطّحة بحدود رفيعة،
+   نقط ألوان، شرايط مقسّمة، شريط تابات عائم + زرار "سجّل" منفصل
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  --bg:#f4f4f7; --card:#ffffff; --card2:#f4f4f8; --card3:#e9e9ef;
+  --line:rgba(0,0,0,.07); --line2:rgba(0,0,0,.12);
+  --c-blue:#2f6fe0; --c-green:#15924f; --c-red:#d93f2f; --c-amber:#b7791f; --c-violet:#7c4dde; --c-pink:#c42d72; --c-sky:#2b8fc7;
+  --num-pos:#15924f; --num-neg:#d93f2f;
+  --pill:#ffffff; --hdr:rgba(244,244,247,.9);
+}
+[data-theme="dark"]{
+  --bg:#000000; --card:#0e0e11; --card2:#151519; --card3:#1d1d22;
+  --line:rgba(255,255,255,.07); --line2:rgba(255,255,255,.12);
+  --txt:#f5f5f7; --muted:#9a9aa3; --faint:#8a8a93;
+  --c-blue:#5b8def; --c-green:#62d394; --c-red:#ef6a5b; --c-amber:#f4b860; --c-violet:#9b7bf2; --c-pink:#e8508a; --c-sky:#7cc4f2;
+  --pri:#7aa2f7; --green:#62d394; --red:#ef6a5b; --amber:#f4b860;
+  --num-pos:#62d394; --num-neg:#ef6a5b;
+  --pill:#16161a; --hdr:rgba(10,10,12,.88);
+}
+body::before{display:none}
+body{font-feature-settings:"tnum" 1}
+.card,.need,.sm-box,.sheet{background:var(--card);border:1px solid var(--line);box-shadow:none;border-radius:24px}
+.sheet .card{background:var(--card2)}
+.ct{font-size:16px;font-weight:800}
+.ct .ic{color:var(--c-blue)}
+.logrow,.stat,.io-b,.holrow{background:var(--card2);border-color:var(--line);box-shadow:none}
+
+/* ── الأرقام الكبيرة (Hero) ── */
+.big-lbl{font-size:14px;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:6px}
+.big-num{font-size:58px;font-weight:800;letter-spacing:-2px;line-height:1.05;font-variant-numeric:tabular-nums}
+.big-sub{font-size:13px;color:var(--muted);margin-top:4px}
+.big-sub b{color:var(--txt)}
+
+/* ── شريط مقسّم بألوان (زي "ليك/عليك") ── */
+.segbar{display:flex;gap:4px;height:12px;margin:14px 0 4px}
+.segbar i{display:block;height:100%;border-radius:99px;min-width:0;transition:flex-grow .6s cubic-bezier(.2,.8,.2,1)}
+.segbar.empty{background:var(--card3);border-radius:99px}
+.seg-legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;color:var(--muted);margin-top:6px}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-inline-end:6px;vertical-align:1px}
+
+/* ── شريط إحصائيات بفواصل (زي الأصول/الالتزامات/الكاش) ── */
+.strip{display:grid;grid-template-columns:repeat(4,1fr);background:var(--card);border:1px solid var(--line);border-radius:22px;padding:14px 4px;margin-bottom:12px}
+.strip > div{padding:0 10px;border-inline-start:1px solid var(--line);cursor:pointer}
+.strip > div:first-child{border-inline-start:0}
+.strip .l{font-size:12px;color:var(--muted);white-space:nowrap}
+.strip .n{font-size:21px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
+
+/* ── صف حالة (مفيش حاجة مستنياك) ── */
+.okpill{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px 16px;border-radius:20px;font-size:14px;font-weight:700;margin-bottom:12px;background:rgba(98,211,148,.12);color:var(--c-green);border:1px solid rgba(98,211,148,.18)}
+
+/* ── لوحات القوايم (زي "حساباتك" و"راحت فين؟") ── */
+.panel-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.panel-h .t{font-size:17px;font-weight:800}
+.panel-h .s{font-size:12px;color:var(--muted)}
+.lrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 0;border-bottom:1px solid var(--line);cursor:pointer}
+.lrow:last-child{border-bottom:0}
+.lrow .nm{font-size:15px;font-weight:600;display:flex;align-items:center}
+.lrow .pc{font-size:12px;color:var(--muted);margin-inline-start:8px}
+.lrow .vl{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums}
+.lrow .chev{color:var(--faint);margin-inline-start:6px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;column-gap:18px}
+.grid2 .lrow{padding:12px 0}
+
+/* ── الرسم البياني شهر بشهر ── */
+.chart{display:flex;align-items:flex-end;gap:10px;height:150px;padding-top:24px;border-bottom:1px solid var(--line)}
+.chart .col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;position:relative}
+.chart .bar{width:70%;max-width:34px;border-radius:8px 8px 3px 3px;background:var(--c-blue);min-height:3px;transition:height .6s cubic-bezier(.2,.8,.2,1)}
+.chart .col.cur .bar{background:var(--c-green)}
+.chart .v{font-size:11px;color:var(--muted);font-weight:700;margin-bottom:4px;white-space:nowrap}
+.chart-x{display:flex;gap:10px;margin-top:6px}
+.chart-x span{flex:1;text-align:center;font-size:12px;font-weight:600;color:var(--muted)}
+.chart-x span.cur{color:var(--txt)}
+
+/* ── الكارت الرئيسي مبقاش ملوّن: نرجّع ألوان الصناديق جواه للعادي ── */
+.hero-act .io-b,.hero .io-b{background:var(--card2);border-color:var(--line)}
+.hero-act .io-l,.hero .io-l{color:var(--muted)}
+
+.bar{background:var(--card3)} .bar .fill{background:var(--c-green);box-shadow:none}
+
+/* ── الأزرار ── */
+.bs{background:var(--card2);color:var(--txt);border:1px solid var(--line)}
+.btn .ic{color:inherit}
+.mini{background:var(--card3);color:var(--txt)}
+.need{background:var(--card)}
+.need .nh{color:var(--c-amber)}
+.openbar{background:rgba(98,211,148,.1);border-color:rgba(98,211,148,.2)}
+
+/* ═══════════════════════════════════════════════════════════════
+   💧 v7.6 — Bento + Liquid Glass (ستايل 2026) — نفس ألوان المحفظة
+   • خلفية سودا وفيها إضاءات ألوان هادية ثابتة ← الزجاج بيبان فوقها وانت بتسكرول
+   • كل كارت = "ويدجت" زجاجي: شفافية + blur + حافة لامعة (specular rim) + لمعة من فوق
+   • مربعات Bento بمقاسات مختلفة · حلقة تقدّم متحركة · أرقام بتعدّ · دخول متدرّج
+   ═══════════════════════════════════════════════════════════════ */
+@property --p{syntax:'<number>';inherits:true;initial-value:0}
+:root{
+  --glass:rgba(255,255,255,.66); --glass2:rgba(255,255,255,.82);
+  --rim1:rgba(255,255,255,.95); --rim2:rgba(255,255,255,.35); --g-edge:rgba(15,15,40,.07);
+  --g-shadow:0 1px 2px rgba(15,15,40,.04),0 18px 40px -26px rgba(15,15,40,.28);
+  --amb1:rgba(21,146,79,.13); --amb2:rgba(47,111,224,.13); --amb3:rgba(124,77,222,.09);
+  --r-tile:28px;
+}
+[data-theme="dark"]{
+  --glass:rgba(30,30,36,.46); --glass2:rgba(34,34,42,.72);
+  --rim1:rgba(255,255,255,.30); --rim2:rgba(255,255,255,.08); --g-edge:rgba(255,255,255,.07);
+  --g-shadow:0 24px 48px -28px rgba(0,0,0,.9);
+  --amb1:rgba(98,211,148,.16); --amb2:rgba(91,141,239,.16); --amb3:rgba(155,123,242,.12);
+}
+/* إضاءات الخلفية (ثابتة) */
+body::before{display:block;content:'';position:fixed;inset:-10% -20%;height:auto;z-index:-1;pointer-events:none;
+  background:radial-gradient(38% 26% at 88% 6%,var(--amb1),transparent 70%),
+             radial-gradient(42% 30% at 6% 42%,var(--amb2),transparent 70%),
+             radial-gradient(40% 28% at 90% 88%,var(--amb3),transparent 70%);
+  animation:ambDrift 24s ease-in-out infinite alternate}
+@keyframes ambDrift{to{transform:translate3d(-3%,2%,0) scale(1.06)}}
+
+/* ── الزجاج السائل ── */
+.card,.need,.tile,.okpill{position:relative;background:var(--glass);border:1px solid var(--g-edge);border-radius:var(--r-tile);box-shadow:var(--g-shadow);
+  -webkit-backdrop-filter:blur(24px) saturate(170%);backdrop-filter:blur(24px) saturate(170%)}
+.card::after,.need::after,.tile::after,.lg::after{content:'';position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;
+  background:linear-gradient(145deg,var(--rim1),var(--rim2) 22%,transparent 45%,transparent 70%,var(--rim2));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.okpill{background:rgba(98,211,148,.12);border-color:rgba(98,211,148,.2)}
+.sheet{background:var(--glass2);-webkit-backdrop-filter:blur(30px) saturate(170%);backdrop-filter:blur(30px) saturate(170%);border:1px solid var(--g-edge)}
+.sheet .card{background:var(--card2);-webkit-backdrop-filter:none;backdrop-filter:none}
+.logrow,.stat,.holrow{background:rgba(127,127,140,.07);border-color:var(--g-edge)}
+@media (prefers-reduced-transparency:reduce){ .card,.need,.tile,.sheet{background:var(--card);-webkit-backdrop-filter:none;backdrop-filter:none} }
+
+/* ── شبكة Bento ── */
+.bento{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.bento .span2,.bento .quad{grid-column:1/-1}
+.tile{padding:16px;min-width:0;color:var(--txt)}
+.tile[onclick],.mini-t{cursor:pointer;transition:transform .18s cubic-bezier(.2,.8,.2,1)}
+.tile[onclick]:active,.mini-t:active{transform:scale(.965)}
+.t-lbl{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;color:var(--muted)}
+.t-ic{width:28px;height:28px;border-radius:10px;display:grid;place-items:center;flex-shrink:0;color:var(--tc);background:color-mix(in srgb,var(--tc) 16%,transparent)}
+.t-ic .ic{width:16px;height:16px;stroke-width:2.3}
+.t-num{font-size:38px;font-weight:800;letter-spacing:-1.5px;line-height:1.05;margin-top:14px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.t-num.pos{color:var(--num-pos)} .t-num.neg{color:var(--num-neg)}
+.t-sub{font-size:12px;color:var(--muted);margin-top:4px}
+.t-sub b{color:var(--txt)}
+.t-money{display:flex;flex-direction:column}
+.t-money .segbar{height:8px;margin:auto 0 0;gap:3px}
+.t-money .t-sub{margin-bottom:14px}
+.t-msg{font-size:11.5px;font-weight:700;text-align:center;line-height:1.4}
+
+/* حلقة التقدّم (متحركة بـ @property) */
+#targetCard{transition:--p 1.1s cubic-bezier(.2,.8,.2,1)}
+.ring3{position:relative;width:104px;height:104px;margin:10px auto 8px;display:grid;place-items:center}
+.ring3::before,.ring3::after{content:'';position:absolute;inset:0;border-radius:50%;
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 11px),#000 calc(100% - 10px));mask:radial-gradient(farthest-side,transparent calc(100% - 11px),#000 calc(100% - 10px))}
+.ring3::before{background:rgba(127,127,140,.16)}
+.ring3::after{background:conic-gradient(var(--c-green) calc(var(--p,0) * 1%),transparent 0);filter:drop-shadow(0 0 8px color-mix(in srgb,var(--c-green) 45%,transparent))}
+.ring3-c{position:relative;z-index:1;text-align:center;line-height:1.1}
+.ring3-c b{display:block;font-size:30px;font-weight:800;letter-spacing:-1px;font-variant-numeric:tabular-nums}
+.ring3-c small{font-size:11px;color:var(--muted);font-weight:600}
+
+/* 4 مربعات صغيرة */
+.quad{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.mini-t{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:12px 12px 11px;border-radius:22px;font-family:inherit;text-align:start}
+.mini-t b{font-size:24px;font-weight:800;line-height:1.1;margin-top:6px;font-variant-numeric:tabular-nums}
+.mini-t span:last-child{font-size:11.5px;color:var(--muted);font-weight:600}
+.mini-t .dot{margin:0;width:8px;height:8px;box-shadow:0 0 10px currentColor}
+
+.t-hours .hrow{display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:13px;font-weight:600;border-bottom:1px solid var(--line);cursor:pointer}
+.t-hours .hrow:first-of-type{margin-top:8px}
+.t-hours .hrow:last-child{border-bottom:0;padding-bottom:0}
+.t-hours .hrow b{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums}
+.t-hours .dot{width:7px;height:7px}
+.t-pap{display:flex;flex-direction:column}
+.t-pap .t-num{flex:1;display:flex;align-items:center;font-size:46px;margin-top:6px}
+
+/* الرسم البياني: أعمدة بتدرّج ولمعة */
+.chart{border-bottom:0;gap:8px}
+.chart .bar{width:76%;max-width:38px;border-radius:12px;background:linear-gradient(180deg,color-mix(in srgb,var(--c-blue) 85%,#fff),var(--c-blue));opacity:.55}
+.chart .col.cur .bar{opacity:1;background:linear-gradient(180deg,color-mix(in srgb,var(--c-green) 80%,#fff),var(--c-green));box-shadow:0 0 18px -2px color-mix(in srgb,var(--c-green) 55%,transparent)}
+.segbar i{box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
+
+/* ── دخول متدرّج للمربعات ── */
+@keyframes rise{from{opacity:0;transform:translateY(14px) scale(.98)}to{opacity:1;transform:none}}
+.bento > *,.quad > *{animation:rise .6s cubic-bezier(.2,.8,.2,1) both}
+.bento > :nth-child(2){animation-delay:.05s} .bento > :nth-child(3){animation-delay:.1s}
+.quad > :nth-child(2){animation-delay:.13s} .quad > :nth-child(3){animation-delay:.16s} .quad > :nth-child(4){animation-delay:.19s}
+.bento > :nth-child(4){animation-delay:.2s} .bento > :nth-child(5){animation-delay:.25s} .bento > :nth-child(6){animation-delay:.3s} .bento > :nth-child(7){animation-delay:.35s}
+.pane.on{animation:paneIn .35s cubic-bezier(.2,.8,.2,1)}
+@keyframes paneIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* الأزرار: زجاج */
+.bs{background:var(--glass);border:1px solid var(--g-edge);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px)}
+</style>
+<script>
+/**
+ * ═══════════════════════════════════════════════════════
+ *  Shared.html — كود مشترك بين WebApp.html و SettingsSidebar.html
+ *  [DEDUP] بيتحمّل عن طريق include('Shared') — جوه الـ <head> (عشان الثيم يتطبّق قبل الرسم)
+ *  [v7.2] كل منطق التابات المشتركة (السجل/التقرير/الضبط/التعديل) هنا — والماركاب بتاعها في Panes.html
+ *  الثابت K (أسماء الإعدادات) بييجي من السيرفر في كل صفحة قبل الملف ده
+ *
+ *  كل ملف مستخدِم (WebApp / SettingsSidebar) لازم يعرّف قبل استدعاء
+ *  الدوال دي:
+ *    - function notify(type, msg)   → 'ok' أو 'er' — يعرض رسالة للمستخدم بطريقته الخاصة (toast/msg)
+ *    - function loadStats()         → تحديث الرئيسية
+ *    - function tab(id)             → التنقّل بين التابات
+ * ═══════════════════════════════════════════════════════
+ */
+
+// ═══ Helpers عامة ═══
+function gid(i){ return document.getElementById(i); }
+function gv(i){ var e=gid(i); return e ? e.value : ''; }
+function sv(i,v){ var e=gid(i); if(e && v!=null) e.value=v; }
+function num(v){ var n=parseFloat(v); return isNaN(n)?0:n; }
+function r(n){ return Math.round(n*100)/100; }
+function fmtMoney(n){ return String(Math.round(num(n))).replace(/\B(?=(\d{3})+(?!\d))/g,','); }
+function esc(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function msgOf(e){ return (e && e.message) ? e.message : String(e||'خطأ غير معروف'); }
+
+// ═══ قراءة صورة مع ضغط (800px) + معالجة أخطاء كاملة ═══
+// [C6][H10][FIX] شبكة أمان زمنية + رفض هادئ للملفات التالفة بدل ما الطلب يعلّق —
+// ولو المتصفح مش قادر "يفك" صيغة الصورة أصلاً (زي HEIC في متصفحات غير Safari) بنرفع
+// الملف الأصلي زي ما هو من غير ضغط بدل ما نفشل بالكامل ونضيّع الصورة.
+var READIMG_MAX_BYTES = 20*1024*1024; // 20MB سقف أمان — أكبر من كده مش هينفع يترفع أصلاً
+function readImg(input, cb){
+  if(!input || !input.files || !input.files[0]){ cb(null); return; }
+  var file=input.files[0];
+  if(file.size > READIMG_MAX_BYTES){ cb(null); return; } // كبيرة جدًا حتى بالحجم الأصلي
+  var done=false;
+  var finish=function(v){ if(done)return; done=true; clearTimeout(guard); cb(v); };
+  var guard=setTimeout(rawFallback, 25000);
+
+  // لو الضغط فشل لأي سبب (صيغة مش مدعومة، صورة تالفة، مشكلة ذاكرة...) ارفع الملف الأصلي زي ما هو
+  function rawFallback(){
+    if(done) return;
+    var r2=new FileReader();
+    r2.onerror=function(){ finish(null); };
+    r2.onload=function(){
+      var out=r2.result;
+      finish(out && String(out).indexOf('data:')===0 ? out : null);
+    };
+    try{ r2.readAsDataURL(file); }catch(e){ finish(null); }
+  }
+
+  var reader=new FileReader();
+  reader.onerror=rawFallback;
+  reader.onload=function(){
+    var img=new Image();
+    img.onerror=rawFallback;   // مش قادر يفك الصيغة (زي HEIC خارج Safari) → ابعت الأصلي
+    img.onload=function(){
+      try{
+        var c=document.createElement('canvas'), max=800, w=img.width, h=img.height;
+        if(!w||!h){ rawFallback(); return; }
+        if(w>max||h>max){ if(w>h){h=h*(max/w);w=max;} else {w=w*(max/h);h=max;} }
+        c.width=Math.round(w); c.height=Math.round(h);
+        c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+        var out=c.toDataURL('image/jpeg',0.6);
+        if(out && out.indexOf('data:image')===0) finish(out); else rawFallback();
+      }catch(err){ rawFallback(); }
+    };
+    img.src=reader.result;
+  };
+  try{ reader.readAsDataURL(file); }catch(e){ rawFallback(); }
+}
+/** زي readImg بس بيرجّع اسم الملف الأصلي كمان (من غير الامتداد) */
+function readFile(input, cb){
+  if(!input || !input.files || !input.files[0]){ cb(null); return; }
+  var name=input.files[0].name.replace(/\.[^.]+$/,'');
+  readImg(input, function(data){ cb(data ? {data:data, name:name} : null); });
+}
+
+// ═══ قواعد التقريب ═══
+function buildRuleRows(){
+  ['ro','ri'].forEach(function(pre){
+    var box=gid(pre==='ro'?'roRows':'riRows'), h='';
+    for(var i=1;i<=4;i++){
+      h+='<div class="row"><div class="f"><label>من دقيقة</label><input type="number" id="c_'+pre+i+'f" min="0" max="59"></div>'+
+         '<div class="f"><label>إلى دقيقة</label><input type="number" id="c_'+pre+i+'t" min="0" max="59"></div>'+
+         '<div class="f"><label>تتحسب</label><input type="number" id="c_'+pre+i+'v" min="0" max="60"></div></div>';
+    }
+    box.innerHTML=h;
+  });
+}
+function fillRules(pre,str,g){
+  if(str==null || String(str).trim()===''){
+    g=parseInt(g); if(isNaN(g)) g=20;
+    if(g>0) str='0-'+g+':0|'+(g+1)+'-'+Math.min(59,30+g)+':30'+((31+g)<=59?('|'+(31+g)+'-59:60'):'');
+    else str='';
+  }
+  var parts=String(str).split(/[|,،\n]+/);
+  for(var i=0;i<4;i++){
+    var m=(parts[i]||'').trim().match(/^(\d{1,2})\s*[-–]\s*(\d{1,2})\s*[:=]\s*(\d{1,3})$/);
+    sv('c_'+pre+(i+1)+'f', m?m[1]:''); sv('c_'+pre+(i+1)+'t', m?m[2]:''); sv('c_'+pre+(i+1)+'v', m?m[3]:'');
+  }
+}
+function rulesStr(pre){
+  var out=[], bad=[];
+  for(var i=1;i<=4;i++){
+    var f=gv('c_'+pre+i+'f'), t=gv('c_'+pre+i+'t'), v=gv('c_'+pre+i+'v');
+    if(f==='' && t==='' && v==='') continue;
+    if(f===''||t===''||v===''){ bad.push('الصف '+i+' ناقص'); continue; }
+    var fn=parseInt(f), tn=parseInt(t), vn=parseInt(v);
+    if(isNaN(fn)||isNaN(tn)||isNaN(vn)||fn<0||fn>59||tn<0||tn>59||vn<0||vn>60){ bad.push('الصف '+i+' خارج المدى'); continue; }
+    if(tn<fn){ bad.push('الصف '+i+': "إلى" ('+tn+') أصغر من "من" ('+fn+')'); continue; }
+    out.push(fn+'-'+tn+':'+vn);
+  }
+  return {str:out.join('|'), bad:bad};
+}
+function togRound(){
+  var off=gid('c_noround').checked;
+  gid('roundBox').style.opacity = off ? '.4' : '1';
+  gid('roundBox').style.pointerEvents = off ? 'none' : 'auto';
+}
+
+// ═══ التقرير: لغة/فلوس ═══
+function setLang(l){ _lang=l; gid('lang_ar').className=l==='ar'?'btn bp':'btn bs'; gid('lang_en').className=l==='en'?'btn bp':'btn bs'; }
+function setMoney(m){ _money=m; gid('money_on').className=m?'btn bp':'btn bs'; gid('money_off').className=!m?'btn bp':'btn bs'; }
+
+// ═══ بديل إجازة رسمية ═══
+function togSub(){
+  var on=gid('a_issub').checked;
+  gid('subBox').style.display = on ? 'block' : 'none';
+  if(!on) return;
+  var date=gv('a_date');
+  var year = date ? date.substring(0,4) : new Date().getFullYear();
+  google.script.run
+    .withSuccessHandler(function(list){
+      var sel=gid('a_holsel'); sel.innerHTML='<option value="">— اختر الإجازة أو اكتبها تحت —</option>';
+      (list||[]).forEach(function(x){ var o=document.createElement('option'); o.value=x.name; o.textContent=x.date+' — '+x.name; sel.appendChild(o); });
+    })
+    .withFailureHandler(function(e){ notify('er','❌ تعذر تحميل الأعياد: '+msgOf(e)); })
+    .getHolidays(year);
+}
+function togEditSub(){ gid('e_holname').style.display = gid('e_issub').checked ? 'block' : 'none'; }
+
+// ═══ 🕌 إدارة الأعياد ═══
+function loadHols(){
+  var y=gv('c_hy') || new Date().getFullYear();
+  gid('holList').innerHTML='<p class="hint" style="text-align:center;padding:10px">⏳...</p>';
+  google.script.run
+    .withSuccessHandler(function(list){
+      if(!list || !list.length){ gid('holList').innerHTML='<p class="hint" style="text-align:center;padding:10px">مفيش أعياد مسجّلة للسنة دي — اضغط "➕ توليد" أو ضيف واحد يدوي</p>'; return; }
+      var h='';
+      for(var i=0;i<list.length;i++){
+        var x=list[i];
+        h+='<div class="holrow'+(x.approx?' approx':'')+'" data-row="'+x.row+'" data-exp="'+esc(x.date)+'">'+
+             '<input type="date" value="'+esc(x.date)+'">'+
+             '<input type="text" value="'+esc(x.name)+'">'+
+             '<button type="button" class="hsave" onclick="saveHol(this)" title="حفظ">💾</button>'+
+             '<button type="button" class="hdel" onclick="delHol(this)" title="حذف">🗑️</button>'+
+           '</div>'+
+           '<div class="hint" style="margin:-4px 0 8px 4px">'+esc(x.day)+(x.approx?' · ⚠️ تاريخ تقريبي — عدّله لما الرسمي يتحدد':'')+'</div>';
+      }
+      gid('holList').innerHTML=h;
+    })
+    .withFailureHandler(function(e){ gid('holList').innerHTML='<p class="hint" style="color:var(--red)">❌ '+esc(msgOf(e))+'</p>'; })
+    .getHolidays(y);
+}
+function saveHol(btn){
+  var row=btn.parentNode;
+  var inputs=row.querySelectorAll('input');
+  var p={ row:parseInt(row.getAttribute('data-row')), expectDate:row.getAttribute('data-exp'),
+          date:inputs[0].value, name:inputs[1].value };
+  if(!p.date){ notify('er','حدد التاريخ'); return; }
+  btn.disabled=true; btn.textContent='⏳';
+  google.script.run
+    .withSuccessHandler(function(rz){ btn.disabled=false; btn.textContent='💾'; notify(rz.ok?'ok':'er',rz.msg); if(rz.ok){ loadHols(); loadStats(); loadLog(); } })
+    .withFailureHandler(function(e){ btn.disabled=false; btn.textContent='💾'; notify('er','❌ '+msgOf(e)); })
+    .saveHoliday(p);
+}
+function delHol(btn){
+  var row=btn.parentNode;
+  if(!confirm('تمسح العيد ده؟ الأيام اللي في السجل هيتعاد حسابها كأيام عادية.')) return;
+  btn.disabled=true; btn.textContent='⏳';
+  google.script.run
+    .withSuccessHandler(function(rz){ notify(rz.ok?'ok':'er',rz.msg); if(rz.ok){ loadHols(); loadStats(); loadLog(); } else { btn.disabled=false; btn.textContent='🗑️'; } })
+    .withFailureHandler(function(e){ btn.disabled=false; btn.textContent='🗑️'; notify('er','❌ '+msgOf(e)); })
+    .deleteHoliday(parseInt(row.getAttribute('data-row')), row.getAttribute('data-exp'));
+}
+function addHol(){
+  var d=gv('nh_date'), n=gv('nh_name');
+  if(!d){ notify('er','حدد تاريخ العيد'); return; }
+  google.script.run
+    .withSuccessHandler(function(rz){ notify(rz.ok?'ok':'er',rz.msg); if(rz.ok){ gid('nh_date').value=''; gid('nh_name').value=''; loadHols(); loadStats(); loadLog(); } })
+    .withFailureHandler(function(e){ notify('er','❌ '+msgOf(e)); })
+    .saveHoliday({date:d, name:n});
+}
+function hols(){
+  var y=gv('c_hy'); if(!y){ notify('er','حدد السنة'); return; }
+  notify('ok','⏳ جاري التوليد...');
+  google.script.run
+    .withSuccessHandler(function(rz){ notify(rz.ok?'ok':'er',rz.msg); if(rz.ok){ loadHols(); loadStats(); loadLog(); } })
+    .withFailureHandler(function(e){ notify('er','❌ '+msgOf(e)); })
+    .addHolidaysForYear(y);
+}
+function clearApprox(){
+  var y=gv('c_hy'); if(!y) return;
+  if(!confirm('تمسح كل الأعياد التقريبية (⚪) لسنة '+y+'؟')) return;
+  google.script.run
+    .withSuccessHandler(function(rz){ notify(rz.ok?'ok':'er',rz.msg); loadHols(); loadStats(); loadLog(); })
+    .withFailureHandler(function(e){ notify('er','❌ '+msgOf(e)); })
+    .clearApproxHolidays(y);
+}
+
+// ═══ أيام السهر — ورقة الأوفرتايم ═══
+var _saharSel = {};   // التواريخ اللي المستخدم اختارها بالضغط (بتفضل متحفوظة بين تحديثات الشاشة)
+function saharBtnLabel(){
+  var n=Object.keys(_saharSel).length;
+  return n ? '📤 رفع ورقة السهر ('+n+' يوم مختار)' : '📤 رفع ورقة السهر';
+}
+function toggleSaharDay(d, el){
+  if(_saharSel[d]){ delete _saharSel[d]; el.classList.remove('sel'); el.textContent=d; }
+  else { _saharSel[d]=true; el.classList.add('sel'); el.textContent='✓ '+d; }
+  if(el.classList.contains('old')) el.textContent=(el.classList.contains('sel')?'✓ ':'')+'⏮ '+d;
+  var b=gid('sh_btn'); if(b && !b.disabled) b.textContent=saharBtnLabel();
+}
+function renderSahar(s){
+  var c=gid('saharCard'), ta=gid('topAlert'); if(!c) return;
+  if(!s || !s.count){ c.style.display='none'; if(ta) ta.style.display='none'; return; }
+  c.style.display='block';
+  gid('sh_period').textContent='خلال فترة التقفيل: '+(s.period||'')+((s.oldDates&&s.oldDates.length)?' + ⏮ أيام من الفترة اللي فاتت':'');
+  if(ta){
+    if(s.ready){
+      ta.textContent='🌙 اكتملت '+s.per+' أيام سهر — اضغط لرفع ورقة الأوفرتايم';
+      if(ta.style.display!=='block'){ ta.style.display='block'; try{ navigator.vibrate && navigator.vibrate([200,100,200]); }catch(e){} }
+    } else ta.style.display='none';
+  }
+  gid('sh_cur').textContent=s.count;
+  gid('sh_per').textContent=s.per; if(gid('sh_per2')) gid('sh_per2').textContent=s.per;
+  var pct=Math.min(100, Math.round(s.count/s.per*100));
+  gid('sh_bar').style.width=pct+'%';
+  // [THEME] لون التنبيه ثابت ومقصود (تحذيري) في الواجهتين؛ اللون العادي بياخد لون كل واجهة عن طريق --accent
+  gid('sh_bar').style.background = s.ready ? 'var(--grad-warn)' : '';
+  var dd=gid('sh_dates'); dd.innerHTML='';
+  // شيل أي اختيار لتاريخ مبقاش معلّق (اتغطّى بورقة قبل كده)
+  var live={}; (s.dates||[]).forEach(function(d){ live[d]=true; });
+  Object.keys(_saharSel).forEach(function(d){ if(!live[d]) delete _saharSel[d]; });
+  var seen={};
+  (s.dates||[]).forEach(function(d,i){
+    if(seen[d]) return; seen[d]=true;   // يوم فيه أكتر من شفت يظهر مرة واحدة
+    var sp=document.createElement('span');
+    var on=!!_saharSel[d];
+    sp.textContent=(on?'✓ ':'')+d;
+    var old=(s.oldDates||[]).indexOf(d)>-1;
+    sp.textContent=(on?'✓ ':'')+(old?'⏮ ':'')+d;
+    sp.className='sh-tag '+(i<s.per?'done':'pending')+(on?' sel':'')+(old?' old':'');
+    sp.onclick=function(){ toggleSaharDay(d, sp); };
+    dd.appendChild(sp);
+  });
+  var b=gid('sh_btn'); if(b && !b.disabled) b.textContent=saharBtnLabel();
+  gid('sh_alert').style.display = s.ready ? 'block' : 'none';
+}
+function goSahar(){ openTasks_('saharCard'); }
+function uploadSahar(){
+  var inp=gid('sh_file');
+  if(!inp.files || !inp.files[0]){ notify('er','اختر صورة الورقة الأول'); return; }
+  var btn=gid('sh_btn'); btn.disabled=true; btn.textContent='⏳ جاري الرفع...';
+  var picked=Object.keys(_saharSel).sort();
+  readFile(inp, function(o){
+    if(!o){ btn.disabled=false; btn.textContent=saharBtnLabel(); notify('er','⚠️ الصورة كبيرة جدًا أو الملف تالف — جرّب صورة تانية'); return; }
+    google.script.run
+      .withSuccessHandler(function(rz){
+        btn.disabled=false;
+        notify(rz.ok?'ok':'er', rz.msg);
+        if(rz.ok){ _saharSel={}; inp.value=''; loadStats(); loadLog(); }
+        btn.textContent=saharBtnLabel();
+      })
+      .withFailureHandler(function(e){ btn.disabled=false; btn.textContent=saharBtnLabel(); notify('er','❌ '+msgOf(e)); })
+      .uploadSaharPaper(o.data, o.name||'ورقة_سهر', picked);
+  });
+}
+
+// ═══ [NEW] تفاصيل كروت إحصائيات الفترة (عرض فقط — البيانات من getStatDetails في الشيت) ═══
+var _AR_DAYS=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+var _statReq=0;
+function arDay_(ds){
+  var p=String(ds).split('-'); if(p.length!==3) return '';
+  var d=new Date(+p[0],+p[1]-1,+p[2]); return isNaN(d) ? '' : _AR_DAYS[d.getDay()];
+}
+function closeStat(){ var m=gid('statModal'); if(m) m.style.display='none'; _statReq++; }
+function showStat(kind){
+  var m=gid('statModal');
+  if(!m){
+    m=document.createElement('div'); m.id='statModal'; m.className='sm-back';
+    m.onclick=function(e){ if(e.target===m) closeStat(); };
+    m.innerHTML='<div class="sm-box"><div class="sm-hd"><span id="smTitle"></span><button type="button" class="sm-x" onclick="closeStat()" aria-label="إغلاق">✕</button></div><div id="smBody"></div></div>';
+    document.body.appendChild(m);
+  }
+  gid('smTitle').textContent='⏳ ...';
+  gid('smBody').innerHTML='<p class="sm-empty">جاري التحميل...</p>';
+  m.style.display='flex';
+  var req=++_statReq;
+  google.script.run
+    .withSuccessHandler(function(res){ if(req===_statReq) renderStat_(res); })
+    .withFailureHandler(function(e){ if(req!==_statReq) return; gid('smTitle').textContent='❌ خطأ'; gid('smBody').innerHTML='<p class="sm-empty" style="color:var(--red)">'+esc(msgOf(e))+'</p>'; })
+    .getStatDetails(kind);
+}
+function renderStat_(res){
+  if(!res || !res.ok){ gid('smTitle').textContent='❌ خطأ'; gid('smBody').innerHTML='<p class="sm-empty">'+esc((res&&res.msg)||'تعذر التحميل')+'</p>'; return; }
+  gid('smTitle').textContent=res.title+' ('+res.count+')';
+  var h='<div class="sm-sum">'+esc(res.period||'');
+  if(res.unit) h+=' · الإجمالي: <b>'+esc(res.total)+'</b> '+esc(res.unit);
+  h+='</div>';
+  if(!res.rows || !res.rows.length){
+    h+='<p class="sm-empty">مفيش أيام في الفترة دي 👌</p>';
+  } else {
+    h+='<div class="sm-list">';
+    res.rows.forEach(function(x){
+      var sub=[arDay_(x.date)]; if(x.tag) sub.push(x.tag);
+      var times=(x.in||x.out) ? esc((x.in||'—')+' ← '+(x.out||'—')) : '';
+      h+='<div class="sm-row"><div class="sm-d">'+esc(x.date)+'<small>'+esc(sub.join(' · '))+'</small></div>'+
+         (times?'<div class="sm-t">'+times+'</div>':'')+
+         (x.val!=null?'<div class="sm-v">'+esc(x.val)+'</div>':'')+'</div>';
+    });
+    h+='</div>';
+  }
+  gid('smBody').innerHTML=h;
+}
+
+// ═══════════════════════════════════════════════════════
+//  [NEW] تحميل السجل بالفترات + تنقّل (◀ ▶) — مشترك بين الواجهتين
+// ═══════════════════════════════════════════════════════
+var _logOff = 0;
+// [v7.2] الصور المصغّرة بتيجي من السيرفر (getThumbs) — شغّالة حتى لو الصور خاصة في Drive، ومتخزّنة على الصفحة
+var _thumbs={};
+function thumb(id,t){
+  var has=_thumbs[id];
+  return '<a href="https://drive.google.com/file/d/'+encodeURIComponent(id)+'/view" target="_blank" rel="noopener"'+(has?' class="done"':'')+' title="'+esc(t||'')+'">'+
+         '<img data-tid="'+esc(id)+'" alt="'+esc(t||'')+'"'+(has?' class="ld" src="'+has+'"':'')+'/></a>';
+}
+function loadThumbs_(root){
+  var imgs=(root||document).querySelectorAll('img[data-tid]:not(.ld)'), ids=[];
+  for(var i=0;i<imgs.length;i++){ var id=imgs[i].getAttribute('data-tid'); if(ids.indexOf(id)<0) ids.push(id); }
+  if(!ids.length) return;
+  google.script.run.withSuccessHandler(function(map){
+    map=map||{};
+    for(var k in map) _thumbs[k]=map[k];
+    var all=(root||document).querySelectorAll('img[data-tid]:not(.ld)');
+    for(var j=0;j<all.length;j++){ var u=_thumbs[all[j].getAttribute('data-tid')]; var a=all[j].parentNode;
+      if(u){ (function(img,a){ img.onerror=function(){ if(a){ a.classList.add('bad'); a.innerHTML=ic('image'); } }; img.src=u; img.className='ld'; })(all[j],a); }
+      else if(a){ a.classList.add('bad'); a.innerHTML=ic('image'); }
+      if(a) a.classList.add('done'); }
+  }).withFailureHandler(function(){}).getThumbs(ids);
+}
+function logNav(d){ _logOff = Math.min(0, _logOff + d); loadLog(); }
+function loadLog(){
+  var box=gid('loglist'); if(!box) return;
+  box.innerHTML='<p class="hint" style="text-align:center;padding:16px">⏳ جاري التحميل...</p>';
+  google.script.run
+    .withSuccessHandler(renderLog_)
+    .withFailureHandler(function(e){ box.innerHTML='<p style="color:var(--red);text-align:center;padding:16px;font-size:12px">❌ تعذر تحميل السجل<br><small>'+esc(msgOf(e))+'</small></p>'; })
+    .getLogPage(_logOff);
+}
+function renderLog_(res){
+  var box=gid('loglist'), pg=gid('logPager'); if(!box) return;
+  res = res || {rows:[], label:'', offset:0};
+  if(pg){
+    pg.innerHTML =
+      '<div class="pager"><button type="button" onclick="logNav(-1)"'+(res.hasOlder?'':' disabled')+'>▶ أقدم</button>'+
+      '<span class="pl">'+esc(res.label||'')+(res.offset?'':' (الحالية)')+'</span>'+
+      '<button type="button" onclick="logNav(1)"'+(res.offset<0?'':' disabled')+'>أحدث ◀</button></div>'+
+      '<div class="logtools"><button type="button" onclick="undoLastUI()">↩️ تراجع عن آخر عملية</button><button type="button" class="alt" onclick="showAudit()">📜 سجل العمليات</button></div>';
+  }
+  if(!res.rows || !res.rows.length){ box.innerHTML='<p style="text-align:center;color:var(--faint);padding:26px">📭 مفيش سجلات في الفترة دي</p>'; return; }
+  window._logRows={}; var h='';
+  for(var i=0;i<res.rows.length;i++){
+    var d=res.rows[i]; window._logRows[d.rowNum]=d;
+    var dt=String(d.dayType||'');
+    var bc = dt.indexOf('⚠️')>-1 ? 'warn'
+           : (d.type==='إجازة' ? 'leave'
+           : ((dt.indexOf('عيد')>-1||dt.indexOf('بديل')>-1||dt.indexOf('أسبوعية')>-1) ? 'hol' : 'work'));
+    h+='<div class="logrow'+(bc==='warn'?' warn':'')+'"><div class="top"><span class="dt">📅 '+esc(d.date)+'</span>'+
+       '<span><span class="badge '+bc+'">'+esc(d.dayType||d.type)+'</span> '+
+       (d.paper?'<span class="badge paper">📋 '+esc(d.paper)+'</span> ':'')+
+       (d.frozen?'<span class="badge frz" title="فترة متجمّدة — الورقة والملاحظات والصور بس">🔒</span> ':'')+'<button type="button" class="mini" onclick="editDay('+d.rowNum+')" aria-label="تعديل يوم '+esc(d.date)+'">✏️ تعديل</button>'+'</span></div>';
+    if(d.type!=='إجازة' && d.type!=='مستند'){
+      h+='<div class="mid"><span>⏰ '+esc(d.in||'—')+'</span><span>🏠 '+esc(d.out||'—')+(d.outDate && d.outDate!==d.date ? ' <small>('+esc(d.outDate)+')</small>' : '')+'</span>';
+      if(d.otTotal>0) h+='<span class="ot">OT '+d.otTotal+'س = '+fmtMoney(d.amt)+'ج</span>';
+      h+='</div>';
+    }
+    var imgs='';
+    if(d.photoIn)  imgs+=thumb(d.photoIn,'بصمة حضور');
+    if(d.photoOut) imgs+=thumb(d.photoOut,'بصمة انصراف');
+    if(d.hrdoc)    imgs+=thumb(d.hrdoc,'ورقة HR');
+    if(imgs) h+='<div class="imgs">'+imgs+'</div>';
+    h+='</div>';
+  }
+  box.innerHTML=h;
+  loadThumbs_(box);
+}
+
+
+// ═══════════════════════════════════════════════════════
+//  [NEW] كروت الرئيسية — بتتحقن من هنا علشان الماركاب مايتكررش في الملفين
+// ═══════════════════════════════════════════════════════
+var LV_TYPES=['سنوية','مرضية','طارئة','بدون راتب','رسمية'];
+function injectHomeCards_(){
+  if(gid('needCard')) return;
+  var ob=gid('openBar'), sc=gid('saharCard');
+  var need=document.createElement('div'); need.id='needCard'; need.className='need'; need.style.display='none';
+  var host=gid('needHost'), home=gid('p-home');
+  if(host) host.appendChild(need);
+  else if(ob && home && home.contains(ob)) ob.parentNode.insertBefore(need, ob.nextSibling);
+  else if(home) home.insertBefore(need, home.firstChild);
+  var opts=''; LV_TYPES.forEach(function(t){ opts+='<option>'+t+'</option>'; });
+  var miss=document.createElement('div'); miss.id='missCard'; miss.className='card'; miss.style.display='none';
+  miss.innerHTML='<div class="ct">❓ أيام مفيهاش تسجيل</div>'+
+    '<p class="hint" style="margin:-6px 0 8px" id="ms_sub">إجازة ولا نسيت تسجّل؟ حدد لكل يوم</p>'+
+    '<div class="f"><label>نوع الإجازة (لو اخترت 🏖️)</label><select id="ms_type">'+opts+'</select></div>'+
+    '<div id="ms_list"></div>'+
+    '<div class="ms-bulk"><button type="button" onclick="missAll(\'leave\')" id="ms_all">🏖️ كلهم إجازة</button><button type="button" class="a" onclick="missAll(\'absent\')">❌ كلهم غياب</button></div>'+
+    '<p class="hint">"غياب" بيفضل محسوب في الإحصائيات بس بيوقف التذكير. "نسيت" بيفتحلك إضافة يوم بالتاريخ جاهز.</p>';
+  var lv=document.createElement('div'); lv.id='lvCard'; lv.className='card'; lv.style.display='none';
+  lv.innerHTML='<div class="ct">🏖️ أيام الإجازة — ورق الإجازة</div>'+
+    '<div style="font-size:10px;color:var(--muted);margin:-6px 0 6px" id="lv_sub"></div>'+
+    '<div id="lv_groups"></div>'+
+    '<div class="hint" id="lv_hint">اضغط على الأيام اللي الورقة بتغطيها (أو "اختار الكل" للطلب كله)، أو سيبها من غير اختيار وهتتسجل على أقدم طلب إجازة (المظلّل)</div>'+
+    '<div class="f" style="margin-top:10px"><label>📎 صورة ورقة الإجازة</label><input type="file" id="lv_file" accept="image/*"></div>'+
+    '<button type="button" class="btn bo" id="lv_btn" onclick="uploadLvPaper()">📤 رفع ورقة الإجازة</button>';
+  if(sc && sc.parentNode){ sc.parentNode.insertBefore(miss, sc); sc.parentNode.insertBefore(lv, sc); }
+}
+function goTo_(id){ openTasks_(id); }
+
+// ═══ [v7.2] نافذة المهام (أيام ناقصة / ورق إجازات / ورق سهر) — بدل ما الكروت تطوّل الرئيسية ═══
+function openTasks_(focusId){
+  var sh=gid('taskSheet'); if(!sh) return;
+  updateTasksEmpty_();
+  sh.style.display='flex'; document.body.style.overflow='hidden';
+  if(focusId){ var c=gid(focusId); if(c && c.style.display!=='none') setTimeout(function(){ c.scrollIntoView({behavior:'smooth',block:'start'}); },120); }
+}
+function closeTasks(){ var sh=gid('taskSheet'); if(sh) sh.style.display='none'; document.body.style.overflow=''; }
+function updateTasksEmpty_(){
+  var any=['missCard','lvCard','saharCard'].some(function(id){ var c=gid(id); return c && c.style.display!=='none'; });
+  var e=gid('tasksEmpty'); if(e) e.style.display = any ? 'none' : 'block';
+}
+function renderNeed_(s){
+  var el=gid('needCard'); if(!el) return;
+  var it=[];
+  if(s.missing && s.missing.count) it.push(['❓ '+s.missing.count+' يوم مفيهم تسجيل — إجازة ولا نسيت؟', "goTo_('missCard')"]);
+  var lp=(s.leavePap&&s.leavePap.count)||0;
+  if(lp) it.push(['📎 '+lp+' يوم إجازة من غير ورقة', "goTo_('lvCard')"]);
+  var sa=s.sahar||{};
+  if(sa.ready) it.push(['🌙 اكتملت '+sa.per+' أيام سهر — ارفع ورقة الأوفرتايم', 'goSahar()']);
+  else if(sa.oldDates && sa.oldDates.length) it.push(['🌙 '+sa.oldDates.length+' يوم سهر من الفترة اللي فاتت من غير ورقة', 'goSahar()']);
+  if(s.needReview) it.push(['⚠️ '+s.needReview+' يوم محتاج مراجعة (أوقات ناقصة)', "tab('log')"]);
+  if(!it.length){ el.className='okpill'; el.innerHTML='✅ مفيش حاجة مستنياك · كل الأيام متسجّلة'; el.style.display='flex'; return; }
+  el.className='need';
+  var h='<div class="nh">📌 محتاج انتباهك ('+it.length+')</div>';
+  it.forEach(function(x){ h+='<div class="ni" role="button" tabindex="0" onclick="'+x[1]+'"><span>'+esc(x[0])+'</span><span class="go">‹</span></div>'; });
+  el.innerHTML=h; el.style.display='block';
+}
+function renderTodayChip_(s){
+  // [v7.2] بيظهر بس للحالات الخاصة (إجازة/عيد/إجازة أسبوعية) — الحضور والانصراف ظاهرين في كارت النهاردة نفسه
+  var host=gid('chipHost'); if(!host) return;
+  var txt='', cls='today-chip';
+  if(s.todayLeave){ txt='🏖️ النهاردة مسجّل إجازة'; cls+=' done'; }
+  else if(s.todayKind){ txt='🕌 النهاردة '+(s.todayLabel||'إجازة')+' — أي شغل بيتحسب أوفرتايم أجازات'; cls+=' off'; }
+  host.innerHTML = txt ? '<div class="'+cls+'">'+esc(txt)+'</div>' : '';
+}
+
+// ── أيام مفيهاش تسجيل ──
+var _missBusy=false, _missDays=[];
+function renderMissing_(m){
+  var c=gid('missCard'); if(!c) return;
+  if(!m || !m.count){ c.style.display='none'; _missDays=[]; return; }
+  _missDays=m.days.map(function(x){ return x.date; });
+  c.style.display='block';
+  gid('ms_sub').textContent=m.count+' يوم عمل مفيهم لا حضور ولا إجازة — إجازة ولا نسيت تسجّل؟'+(m.count>m.days.length?' (آخر '+m.days.length+' يوم)':'');
+  var h='';
+  m.days.forEach(function(x){
+    h+='<div class="ms-row"><div class="ms-d">'+esc(x.dow)+'<small>'+esc(x.date)+'</small></div><div class="ms-b">'+
+       '<button type="button" class="l" onclick="missAct(\''+x.date+'\',\'leave\')">🏖️ إجازة</button>'+
+       '<button type="button" class="f2" onclick="missForgot(\''+x.date+'\')">✍️ نسيت</button>'+
+       '<button type="button" class="a" onclick="missAct(\''+x.date+'\',\'absent\')">❌ غياب</button></div></div>';
+  });
+  gid('ms_list').innerHTML=h;
+}
+function missBusy_(on){
+  _missBusy=on;
+  var bs=document.querySelectorAll('#missCard button'); for(var i=0;i<bs.length;i++) bs[i].disabled=on;
+}
+function missRun_(dates, action){
+  if(_missBusy) return;
+  if(action==='absent' && !confirm('تأكيد غياب '+dates.length+' يوم؟\nهيفضلوا محسوبين غياب، بس مش هفكّرك بيهم تاني.')) return;
+  missBusy_(true);
+  google.script.run
+    .withSuccessHandler(function(rz){
+      missBusy_(false);
+      notify(rz.ok?'ok':'er', rz.msg);
+      if(rz.ok){ loadStats(); loadLog(); offerUndo(); }
+    })
+    .withFailureHandler(function(e){ missBusy_(false); notify('er','❌ '+msgOf(e)); })
+    .resolveMissingDays(dates, action, gv('ms_type'));
+}
+function missAct(d, action){ missRun_([d], action); }
+function missAll(action){ if(_missDays.length) missRun_(_missDays.slice(), action); }
+function missForgot(d){
+  closeTasks();
+  tab('log');
+  setTimeout(function(){
+    sv('a_date', d);
+    var f=gid('a_in'); if(f){ f.scrollIntoView({behavior:'smooth',block:'center'}); try{ f.focus(); }catch(e){} }
+    notify('ok','✍️ اكتب الحضور والانصراف ليوم '+d+' وبعدين اضغط ➕ إضافة');
+  },200);
+}
+
+// ── ورق الإجازات ──
+var _lvSel={};
+function lvBtnLabel(){ var n=Object.keys(_lvSel).length; return n ? '📤 رفع ورقة الإجازة ('+n+' يوم مختار)' : '📤 رفع ورقة الإجازة'; }
+function toggleLvDay(d, el){
+  if(_lvSel[d]){ delete _lvSel[d]; el.classList.remove('sel'); el.textContent=d; }
+  else { _lvSel[d]=true; el.classList.add('sel'); el.textContent='✓ '+d; }
+  var b=gid('lv_btn'); if(b && !b.disabled) b.textContent=lvBtnLabel();
+}
+function selLvGroup(i){
+  var g=(window._lvGroups||[])[i]; if(!g) return;
+  var all=g.dates.every(function(d){ return _lvSel[d]; });
+  g.dates.forEach(function(d){ if(all) delete _lvSel[d]; else _lvSel[d]=true; });
+  renderLvPap_(window._lvData);
+}
+function renderLvPap_(lp){
+  var c=gid('lvCard'); if(!c) return;
+  window._lvData=lp;
+  if(!lp || !lp.count){ c.style.display='none'; _lvSel={}; window._lvGroups=[]; return; }
+  c.style.display='block';
+  window._lvGroups=lp.groups;
+  var live={}; lp.groups.forEach(function(g){ g.dates.forEach(function(d){ live[d]=true; }); });
+  Object.keys(_lvSel).forEach(function(d){ if(!live[d]) delete _lvSel[d]; });
+  gid('lv_sub').textContent=lp.count+' يوم إجازة من غير ورقة'+(lp.oldCount?' (منهم '+lp.oldCount+' من الفترة اللي فاتت)':'');
+  var box=gid('lv_groups'); box.innerHTML='';
+  lp.groups.forEach(function(g,gi){
+    var w=document.createElement('div'); w.className='lv-g';
+    var allSel=g.dates.every(function(d){ return _lvSel[d]; });
+    var hd=document.createElement('div'); hd.className='lv-h';
+    hd.innerHTML='<span>🏖️ '+esc(g.type)+' <small>'+esc(g.from)+(g.to!==g.from?' ← '+esc(g.to):'')+' · '+g.dates.length+' يوم</small></span>';
+    var bt=document.createElement('button'); bt.type='button'; bt.textContent=allSel?'إلغاء الكل':'اختار الكل'; bt.onclick=function(){ selLvGroup(gi); };
+    hd.appendChild(bt); w.appendChild(hd);
+    var ch=document.createElement('div'); ch.className='lv-c';
+    g.dates.forEach(function(d){
+      var sp=document.createElement('span'), on=!!_lvSel[d];
+      sp.textContent=(on?'✓ ':'')+d;
+      sp.className='sh-tag '+(gi===0?'done':'pending')+(on?' sel':'');
+      sp.onclick=function(){ toggleLvDay(d, sp); };
+      ch.appendChild(sp);
+    });
+    w.appendChild(ch); box.appendChild(w);
+  });
+  var b=gid('lv_btn'); if(b && !b.disabled) b.textContent=lvBtnLabel();
+}
+function uploadLvPaper(){
+  var inp=gid('lv_file');
+  if(!inp.files || !inp.files[0]){ notify('er','اختر صورة الورقة الأول'); return; }
+  var btn=gid('lv_btn'); btn.disabled=true; btn.textContent='⏳ جاري الرفع...';
+  var picked=Object.keys(_lvSel).sort();
+  readFile(inp, function(o){
+    if(!o){ btn.disabled=false; btn.textContent=lvBtnLabel(); notify('er','⚠️ الصورة كبيرة جدًا أو الملف تالف — جرّب صورة تانية'); return; }
+    google.script.run
+      .withSuccessHandler(function(rz){
+        btn.disabled=false; notify(rz.ok?'ok':'er', rz.msg);
+        if(rz.ok){ _lvSel={}; inp.value=''; loadStats(); loadLog(); }
+        btn.textContent=lvBtnLabel();
+      })
+      .withFailureHandler(function(e){ btn.disabled=false; btn.textContent=lvBtnLabel(); notify('er','❌ '+msgOf(e)); })
+      .uploadLeavePaper(o.data, o.name||'ورقة_إجازة', picked);
+  });
+}
+
+// ═══ [NEW] تحذيرات الداشبورد + شريط الشفت المفتوح + كروت إضافية ═══
+function warnHtml_(s){
+  var h='';
+  if(s.periodWarn) h+='<div class="notice">'+esc(s.periodWarn)+'</div>';
+  (s.warns||[]).forEach(function(w){ h+='<div class="notice">'+esc(w)+'</div>'; });
+  if(s.frozenUntil) h+='<div class="notice info">🔒 الأيام لحد '+esc(s.frozenUntil)+' متجمّدة (مش بتتعدّل ولا بتتأثر بتغيير الأسعار)</div>';
+  return h;
+}
+var _openT=null;
+function renderOpen_(o){
+  var el=gid('openBar'); if(!el) return;
+  if(_openT){ clearInterval(_openT); _openT=null; }
+  if(!o){ el.innerHTML=''; return; }
+  var loadedAt=Date.now();
+  function draw(){
+    var mins=Math.max(0, Math.floor(o.hours*60 + (Date.now()-loadedAt)/60000));
+    var stale = (mins/60) >= o.thr;
+    el.innerHTML='<div class="openbar'+(stale?' stale':'')+'">'+(stale?'⚠️ ':'🟢 ')+'شغّال من '+esc(o.in)+(o.date?' (<bdi>'+esc(o.date)+'</bdi>)':'')+
+      ' — بقاله '+Math.floor(mins/60)+'س '+(mins%60)+'د'+(stale?' — نسيت تسجّل الانصراف؟':'')+'</div>';
+  }
+  draw(); _openT=setInterval(draw,30000);
+}
+function renderExtra_(s){
+  var set=function(i,v){ var e=gid(i); if(e) e.textContent=v; };
+  set('s_late', s.lateDays||0); set('s_ota', s.otTotal||0); set('s_pap', ((s.sahar&&s.sahar.count)||0)+((s.leavePap&&s.leavePap.count)||0));
+  var parts=['⏱️ ساعات العمل: '+(s.worked||0)];
+  if(s.avgWorked) parts.push('متوسط '+s.avgWorked+' س/يوم');
+  if(s.lateMins) parts.push('تأخير '+s.lateMins+' د');
+  if(s.leaveBal && s.leaveBal.quota>0) parts.push('🏖️ رصيد الإجازات: '+s.leaveBal.left+' من '+s.leaveBal.quota);
+  var n2=gid('s_note2'); if(n2) n2.textContent=parts.join(' · ');
+  var w=gid('warnBox'); if(w) w.innerHTML=warnHtml_(s);
+  renderOpen_(s.openShift);
+  renderNeed_(s); renderMissing_(s.missing); renderLvPap_(s.leavePap); renderTodayChip_(s); updateTasksEmpty_();
+}
+
+// ═══ [NEW] تراجع + سجل العمليات ═══
+var _undoT=null;
+function offerUndo(){
+  var b=gid('undoBar');
+  if(!b){ b=document.createElement('div'); b.id='undoBar'; b.className='undo-bar';
+    b.innerHTML='<span>تم ✅</span><button type="button" onclick="doUndo(true)">↩️ تراجع</button>'; document.body.appendChild(b); }
+  b.style.display='flex'; clearTimeout(_undoT); _undoT=setTimeout(function(){ b.style.display='none'; },9000);
+}
+function doUndo(fromBar){
+  var b=gid('undoBar'); if(b) b.style.display='none';
+  google.script.run
+    .withSuccessHandler(function(rz){ notify(rz.ok?'ok':'er', rz.msg); if(rz.ok){ loadStats(); loadLog(); closeAudit(); } })
+    .withFailureHandler(function(e){ notify('er','❌ '+msgOf(e)); })
+    .undoLast();
+}
+function undoLastUI(){
+  google.script.run
+    .withSuccessHandler(function(lg){
+      var nx=null; ((lg&&lg.rows)||[]).forEach(function(x){ if(x.next) nx=x; });
+      if(!nx){ notify('er','مفيش عمليات للتراجع عنها'); return; }
+      if(confirm('تتراجع عن: '+nx.desc+' ?')) doUndo();
+    })
+    .withFailureHandler(function(e){ notify('er','❌ '+msgOf(e)); })
+    .getAuditLog(30);
+}
+function closeAudit(){ var m=gid('auditModal'); if(m) m.style.display='none'; }
+function showAudit(){
+  var m=gid('auditModal');
+  if(!m){
+    m=document.createElement('div'); m.id='auditModal'; m.className='sm-back';
+    m.onclick=function(e){ if(e.target===m) closeAudit(); };
+    m.innerHTML='<div class="sm-box"><div class="sm-hd"><span>📜 آخر العمليات</span><button type="button" class="sm-x" onclick="closeAudit()" aria-label="إغلاق">✕</button></div><div id="auBody"></div></div>';
+    document.body.appendChild(m);
+  }
+  gid('auBody').innerHTML='<p class="sm-empty">جاري التحميل...</p>';
+  m.style.display='flex';
+  google.script.run
+    .withSuccessHandler(function(lg){
+      var rows=(lg&&lg.rows)||[];
+      if(!rows.length){ gid('auBody').innerHTML='<p class="sm-empty">مفيش عمليات متسجّلة لسه</p>'; return; }
+      var h='<div class="sm-sum">آخر عملية قابلة للتراجع متظلّلة — "تراجع" بيلغيها هي بس</div><div class="sm-list">';
+      rows.forEach(function(x){
+        h+='<div class="sm-row'+(x.next?' au-next':'')+(x.undone?' au-undone':'')+'"><div class="sm-d">'+esc(x.desc)+'<small>'+esc(x.time)+(x.undone?' · اتلغت':'')+'</small></div></div>';
+      });
+      h+='</div>';
+      if(lg.canUndo) h+='<div style="padding:10px 14px"><button type="button" class="btn bo" style="margin:0" onclick="doUndo()">↩️ تراجع عن آخر عملية</button></div>';
+      gid('auBody').innerHTML=h;
+    })
+    .withFailureHandler(function(e){ gid('auBody').innerHTML='<p class="sm-empty" style="color:var(--red)">'+esc(msgOf(e))+'</p>'; })
+    .getAuditLog(20);
+}
+
+// ═══ [NEW] تعديل يوم: حالة الورقة + تنبيهات العيد/التجميد ═══
+function fillEditExtra_(d){
+  sv('e_paper', d.paper||'');
+  var n=gid('e_note'), t=[];
+  if(d.isHoliday && !d.isSubstitute) t.push('🕌 عيد رسمي: '+(d.holidayName||'')+' — بيتحسب بفاكتور الأجازات');
+  if(d.isSubstitute) t.push('🕌 بديل إجازة رسمية ('+(d.holidayName||'')+')');
+  if(d.frozen) t.push('🔒 فترة متجمّدة — تقدر تغيّر حالة الورقة والملاحظات والصور بس (الأوقات والحذف مقفولين)');
+  if(n) n.innerHTML=esc(t.join('\n')).replace(/\n/g,'<br>');
+  ['e_in','e_out','e_outdate','e_issub','e_holname','e_delBtn'].forEach(function(i){ var b=gid(i); if(b) b.disabled=!!d.frozen; });
+}
+
+// ═══════════════════════════════════════════════════════
+//  [NEW] إعدادات إضافية — بتتحقن في newSetBox1/2/3 (علشان الماركاب مايتكررش في الملفين)
+// ═══════════════════════════════════════════════════════
+var _WK=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+var NEWSET_MAP=[
+  ['c_bpaid',K.BREAK_PAID], ['c_bmin',K.BREAK_MIN_SHIFT], ['c_dst',K.DST_MODE],
+  ['c_otmode',K.OT_MODE], ['c_quota',K.LEAVE_QUOTA],
+  ['c_openthr',K.OPEN_THR], ['c_preclose',K.PRECLOSE_DAYS],
+  ['c_weekly',K.WEEKLY_DAY], ['c_absat',K.ABSENT_AT],
+  ['c_remind',K.REMIND_MISSING], ['c_lvtypes',K.LEAVE_PAPER_TYPES]
+];
+function injectNewSettings_(){
+  var b1=gid('newSetBox1'), b2=gid('newSetBox2'), b3=gid('newSetBox3');
+  if(b1){
+    var wo=''; _WK.forEach(function(d){ wo+='<label><input type="checkbox" class="wo-cb" value="'+d+'" onchange="woMark_(this)"> '+d+'</label>'; });
+    b1.innerHTML=
+      '<div class="card"><div class="ct">☕ الراحة وطريقة حساب الساعات</div>'+
+      '<div class="f"><label>الراحة مدفوعة؟</label><select id="c_bpaid" onchange="togBreak_()"><option value="نعم">نعم — مفيش أي خصم من ساعات العمل</option><option value="لا">لا — بتتخصم من ساعات العمل</option></select></div>'+
+      '<div id="brk_more"><div class="f"><label>تتخصم بس لو الشفت ≥ (ساعة)</label><input type="number" id="c_bmin" min="0" max="24" step="0.5"></div>'+
+      '<p class="hint">مدة الراحة المخصومة بتتحدد في خانة "راحة (دق)" فوق. لو الشفت أقصر من الحد ده (مثلاً ساعتين يوم الجمعة) مفيش خصم.</p></div>'+
+      '<div class="f"><label>طريقة احتساب الأوفرتايم</label><select id="c_otmode"><option value="صافي الساعات">صافي الساعات (ساعات العمل − الساعات الرسمية)</option><option value="خارج الدوام">خارج الدوام (قبل البداية + بعد النهاية)</option></select>'+
+      '<p class="hint">لو اتأخرت الصبح: "صافي الساعات" بيخصم التأخير من الأوفرتايم، "خارج الدوام" بيحسب بس الوقت اللي بعد نهاية الدوام.</p></div>'+
+      '<div class="f"><label>🕐 تغيير التوقيت الصيفي</label><select id="c_dst"><option value="فعلي">الساعات الفعلية (ليلة التغيير 13 أو 11 ساعة)</option><option value="حسب الساعة">حسب الساعة على الحيطة (دايمًا 12)</option></select></div></div>'+
+      '<div class="card"><div class="ct">🕌 الإجازة الأسبوعية (تقدر تختار أكتر من يوم)</div><div class="wo-box" id="woBox">'+wo+'</div><p class="hint">لو مفيش أي يوم متعلّم = مفيش إجازة أسبوعية</p></div>';
+  }
+  if(b2){
+    b2.innerHTML=
+      '<div class="card"><div class="ct">🧪 جرّب التقريب والحساب</div>'+
+      '<p class="hint" style="margin:-4px 0 8px">بيستخدم الرنجات اللي قدامك دلوقتي (حتى لو لسه ماحفظتهاش) — الحساب بنفس كود الشيت</p>'+
+      '<div class="f"><label>التاريخ</label><input type="date" id="pv_date"></div>'+
+      '<div class="row"><div class="f"><label>حضور</label><input type="time" id="pv_in" value="07:50"></div><div class="f"><label>انصراف</label><input type="time" id="pv_out" value="17:20"></div></div>'+
+      '<button type="button" class="btn bs" onclick="runPreview()">🧪 جرّب</button><div class="pv-res" id="pv_res"></div></div>';
+  }
+  if(b3){
+    var wk='<option value="بدون">بدون (مقفول)</option>'; _WK.forEach(function(d){ wk+='<option value="'+d+'">'+d+'</option>'; });
+    b3.innerHTML=
+      '<div class="card"><div class="ct">🔒 تجميد الفترات المقفولة</div>'+
+      '<div class="fz-state" id="fz_state"></div>'+
+      '<p class="hint" style="margin-bottom:8px">بعد ما تقفل الفترة وتبعت التقرير، جمّدها: الأيام دي مش هتتعدّل وماتتأثرش لو غيّرت السعر أو الفاكتور أو أي إعداد.</p>'+
+      '<button type="button" class="btn bo" onclick="freezeNow()">🔒 جمّد كل الفترات المقفولة</button>'+
+      '<button type="button" class="btn bs" onclick="unfreeze()">🔓 فك التجميد</button></div>'+
+      '<div class="card"><div class="ct">🔔 المتابعة والتنبيهات</div>'+
+      '<div class="row"><div class="f"><label>رصيد الإجازة السنوي (يوم)</label><input type="number" id="c_quota" min="0" max="365"></div><div class="f"><label>تحذير شفت مفتوح بعد (ساعة)</label><input type="number" id="c_openthr" min="1" max="48"></div></div>'+
+      '<div class="row"><div class="f"><label>تنبيه قبل التقفيل بـ (أيام)</label><input type="number" id="c_preclose" min="0" max="10"></div><div class="f"><label>تنبيه الغياب بعد الساعة</label><input type="time" id="c_absat"></div></div>'+
+      '<div class="f"><label>📅 ملخص أسبوعي بالإيميل يوم</label><select id="c_weekly">'+wk+'</select></div>'+
+      '<div class="f"><label>❓ تذكير يومي بالأيام اللي مفيهاش تسجيل (إيميل)</label><select id="c_remind"><option value="نعم">نعم</option><option value="لا">لا</option></select></div>'+
+      '<div class="f"><label>📎 أنواع الإجازات اللي محتاجة ورقة</label><input type="text" id="c_lvtypes" placeholder="سنوية,مرضية,طارئة,بدون راتب"></div>'+
+      '<p class="hint">سيب "أنواع الإجازات" فاضية لو مش عايز تتابع ورق الإجازات. التذكير بيتبعت أول ما يبقى فيه يوم ناقص، وبعدها كل 3 أيام لحد ما تحلّه.</p>'+
+      '<p class="hint">التنبيهات بتتبعت على إيميل التقرير، وبتحتاج "⏰ تفعيل المعالجة التلقائية" من قايمة HR System (مرة واحدة بعد التحديث). رصيد الإجازة بيعدّ السنوية + الطارئة. سيب "تنبيه الغياب" فاضي لتعطيله، و"قبل التقفيل" 0 لتعطيله.</p></div>';
+  }
+}
+function fillWo_(str){
+  var sel=String(str==null?'':str).split(/[,،|\/\n]+/).map(function(x){return x.trim();});
+  var cbs=document.querySelectorAll('.wo-cb');
+  for(var i=0;i<cbs.length;i++){ cbs[i].checked = sel.indexOf(cbs[i].value)>-1; woMark_(cbs[i]); }
+}
+function woMark_(cb){ if(cb && cb.parentNode) cb.parentNode.classList.toggle('on', cb.checked); }
+function woValue_(){
+  var out=[], cbs=document.querySelectorAll('.wo-cb');
+  for(var i=0;i<cbs.length;i++) if(cbs[i].checked) out.push(cbs[i].value);
+  return out.length ? out.join(',') : 'بدون';
+}
+function togBreak_(){
+  var paid = gv('c_bpaid')!=='لا';
+  var more=gid('brk_more'); if(more) more.style.display = paid ? 'none' : 'block';
+  var br=gid('c_br'); if(br && br.parentNode) br.parentNode.style.opacity = paid ? '.45' : '1';
+}
+function renderFreeze_(v){
+  var el=gid('fz_state'); if(!el) return;
+  el.className='fz-state'+(v?' on':'');
+  el.innerHTML = v ? '🔒 متجمّد لحد <b>'+esc(v)+'</b> — أي يوم قبل كده مش هيتعدّل ولا هيتأثر بتغيير الأسعار' : '🔓 مفيش تجميد — كل الأيام قابلة للتعديل وإعادة الحساب';
+}
+function fillNewSet_(s){
+  NEWSET_MAP.forEach(function(p){ sv(p[0], s[p[1]]); });
+  fillWo_(s[K.WEEK_OFF]); renderFreeze_(s[K.FREEZE]); togBreak_(); renderPrivacy_(s[K.IMG_PRIVACY]);
+  if(!gv('pv_date')){ var t0=new Date(); sv('pv_date', t0.getFullYear()+'-'+String(t0.getMonth()+1).padStart(2,'0')+'-'+String(t0.getDate()).padStart(2,'0')); }   // [v7.7] التاريخ المحلي (toISOString بيرجّع إمبارح بعد نص الليل لحد 2 الصبح)
+}
+function newSetValues_(){
+  var d={}; NEWSET_MAP.forEach(function(p){ d[p[1]]=gv(p[0]); });
+  d[K.WEEK_OFF]=woValue_();
+  return d;
+}
+function freezeNow(){
+  if(!confirm('هتجمّد كل الأيام لحد نهاية آخر فترة اتقفلت؟\nمش هتقدر تعدّلها غير بعد فك التجميد.')) return;
+  google.script.run
+    .withSuccessHandler(function(rz){ notify(rz.ok?'ok':'er',rz.msg); if(rz.ok){ renderFreeze_(rz.frozenUntil); loadStats(); loadLog(); } })
+    .withFailureHandler(function(e){ notify('er','❌ '+msgOf(e)); })
+    .setFreeze('auto');
+}
+function unfreeze(){
+  if(!confirm('تفك التجميد؟ الأيام القديمة هتبقى قابلة للتعديل وإعادة الحساب بالأسعار الحالية.')) return;
+  google.script.run
+    .withSuccessHandler(function(rz){ notify(rz.ok?'ok':'er',rz.msg); if(rz.ok){ renderFreeze_(''); loadStats(); loadLog(); } })
+    .withFailureHandler(function(e){ notify('er','❌ '+msgOf(e)); })
+    .setFreeze('off');
+}
+function runPreview(){
+  var ro=rulesStr('ro'), ri=rulesStr('ri'), off=gid('c_noround').checked;
+  if(!off && (ro.bad.length || ri.bad.length)){ notify('er','❌ قواعد التقريب:\n• '+ro.bad.concat(ri.bad).join('\n• ')); return; }
+  var p={date:gv('pv_date'), in:gv('pv_in'), out:gv('pv_out'),
+         rulesIn: off ? '' : ri.str, rulesOut: off ? '' : ro.str, graceIn: off ? '0' : '', graceOut: off ? '0' : ''};
+  var box=gid('pv_res'); box.style.display='block'; box.textContent='⏳...';
+  google.script.run
+    .withSuccessHandler(function(x){
+      if(!x || !x.ok){ box.textContent=(x&&x.msg)||'تعذر الحساب'; return; }
+      box.innerHTML='⏰ حضور '+esc(p.in)+' ← <b>'+esc(x.inR)+'</b> &nbsp; 🏠 انصراف '+esc(p.out)+' ← <b>'+esc(x.outR)+'</b><br>'+
+        '⏱️ ساعات العمل: <b>'+esc(x.worked)+'</b> · OT: ☀️ '+esc(x.otDay)+' · 🌙 '+esc(x.otNight)+' · 🕌 '+esc(x.otHol)+' = <b>'+esc(fmtMoney(x.amt))+'</b> جنيه<br><small>'+esc(x.dayType)+'</small>';
+    })
+    .withFailureHandler(function(e){ box.textContent='❌ '+msgOf(e); })
+    .previewDay(p);
+}
+
+document.addEventListener('keydown',function(e){
+  if(e.key==='Escape') closeStat();
+  else if(e.key==='Enter' && e.target && e.target.classList && e.target.classList.contains('clk')) e.target.click();
+});
+</script>
+<script>
+/* ═══════════════════════════════════════════════════════
+   [v7.2] منطق التابات المشتركة — كان مكرر في WebApp و SettingsSidebar، دلوقتي هنا بس
+   ═══════════════════════════════════════════════════════ */
+
+// ═══ زرار "شغّال" (spinner) ═══
+function busy_(btn, on, label){
+  if(!btn) return;
+  if(on){ if(btn._lbl==null) btn._lbl=btn.innerHTML; btn.disabled=true; btn.innerHTML='<span class="sp" style="width:16px;height:16px;border-width:2px;margin:0"></span> '+esc(label||'جاري...'); }
+  else { btn.disabled=false; if(btn._lbl!=null){ btn.innerHTML=btn._lbl; btn._lbl=null; } }
+}
+
+// ═══ رفع الصور: شكل عربي بمعاينة بدل "Choose File / No file chosen" ═══
+var _valDesc = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value');
+function onValueSet_(inp, fn){   // لما الكود يكتب input.value = ... (زي التفريغ بعد الحفظ) نحدّث الشكل
+  try{ Object.defineProperty(inp,'value',{configurable:true,get:function(){ return _valDesc.get.call(this); },set:function(v){ _valDesc.set.call(this,v); setTimeout(fn,0); }}); }catch(e){}
+}
+function enhanceFiles_(root){
+  var ins=(root||document).querySelectorAll('input[type=file]:not([data-up])');
+  for(var i=0;i<ins.length;i++) (function(inp){
+    inp.setAttribute('data-up','1');
+    var hint=inp.getAttribute('data-hint')||'من الكاميرا أو المعرض';
+    var lab=document.createElement('label'); lab.className='upl';
+    lab.innerHTML='<span class="upl-ic">'+ic('camera')+'</span><img class="upl-pv" alt=""><span class="upl-txt"><span class="upl-t">اختار صورة</span><span class="upl-s"></span></span><button type="button" class="upl-x" aria-label="شيل الصورة">'+ic('x')+'</button>';
+    inp.parentNode.insertBefore(lab, inp); lab.insertBefore(inp, lab.firstChild);
+    var pv=lab.querySelector('.upl-pv'), t=lab.querySelector('.upl-t'), sub=lab.querySelector('.upl-s'), url=null;
+    sub.textContent=hint;
+    function upd(){
+      var f=inp.files && inp.files[0];
+      if(url){ try{ URL.revokeObjectURL(url); }catch(e){} url=null; }
+      if(!f){ lab.classList.remove('has','pv'); t.textContent='اختار صورة'; sub.textContent=hint; pv.removeAttribute('src'); return; }
+      lab.classList.add('has'); t.textContent=f.name||'صورة';
+      sub.textContent=Math.max(1,Math.round(f.size/1024))+' KB — اضغط لتغييرها';
+      try{ url=URL.createObjectURL(f); pv.onload=function(){ lab.classList.add('pv'); }; pv.onerror=function(){ lab.classList.remove('pv'); }; pv.src=url; }catch(e){}
+    }
+    inp.addEventListener('change', upd);
+    lab.querySelector('.upl-x').addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); inp.value=''; var ch=inp.getAttribute('onchange'); if(ch) inp.dispatchEvent(new Event('change')); });
+    onValueSet_(inp, upd);
+  })(ins[i]);
+}
+
+// ═══ التواريخ: اسم اليوم والتاريخ بالعربي تحت الخانة (المتصفح بيعرضها mm/dd/yyyy) ═══
+var _dfmt=null;
+function arDate_(v){
+  var p=String(v||'').split('-'); if(p.length!==3) return '';
+  var d=new Date(+p[0],+p[1]-1,+p[2]); if(isNaN(d)) return '';
+  try{ _dfmt=_dfmt||new Intl.DateTimeFormat('ar-EG-u-nu-latn',{weekday:'long',day:'numeric',month:'long',year:'numeric'}); return _dfmt.format(d); }catch(e){ return v; }
+}
+function enhanceDates_(root){
+  var ins=(root||document).querySelectorAll('.f input[type=date]:not([data-dh])');
+  for(var i=0;i<ins.length;i++) (function(inp){
+    inp.setAttribute('data-dh','1');
+    var h=document.createElement('div'); h.className='dhint'; inp.parentNode.insertBefore(h, inp.nextSibling);
+    var upd=function(){ h.textContent=arDate_(inp.value); };
+    inp.addEventListener('input',upd); inp.addEventListener('change',upd); onValueSet_(inp, upd); upd();
+  })(ins[i]);
+}
+document.addEventListener('DOMContentLoaded', function(){
+  enhanceFiles_(); enhanceDates_();
+  var ics=document.querySelectorAll('[data-ic]'); for(var i=0;i<ics.length;i++) ics[i].innerHTML=ic(ics[i].getAttribute('data-ic'));
+});
+
+// ═══ الرئيسية: الأرقام المشتركة (الفلوس + الهدف + الإحصائيات) ═══
+// [v7.6] الأرقام الكبيرة بتعدّ لحد قيمتها (مرة واحدة لكل تغيير)
+function countTo_(el, to, fmt){
+  if(!el) return; to=num(to); var from = el._v==null ? 0 : el._v; el._v=to;
+  if(from===to || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)){ el.textContent=fmt(to); return; }
+  var t0=performance.now(), dur=900; cancelAnimationFrame(el._raf);
+  var step=function(now){ var k=Math.min(1,(now-t0)/dur), e=1-Math.pow(1-k,3); el.textContent=fmt(from+(to-from)*e); if(k<1) el._raf=requestAnimationFrame(step); };
+  el._raf=requestAnimationFrame(step);
+}
+function renderHomeStats_(s){
+  countTo_(gid('m_total'), s.amt, fmtMoney);
+  gid('m_day').textContent=fmtMoney(s.amtDay);
+  gid('m_night').textContent=fmtMoney(s.amtNight);
+  gid('m_hol').textContent=fmtMoney(s.amtHol);
+  gid('s_att').textContent=s.attended; gid('s_abs').textContent=s.absent; gid('s_lv').textContent=s.leaves;
+  gid('s_otd').textContent=s.otDay; gid('s_otn').textContent=s.otNight; gid('s_oth').textContent=s.otHol;
+  gid('s_note').textContent='أيام العمل لحد النهاردة: '+s.workDays+' من '+s.workDaysTotal+' · باقي '+s.remaining+' يوم في الفترة';
+  renderExtra_(s);
+  var cur=num(s.otTotal), goal=num(s.target), m=gid('t_msg');
+  countTo_(gid('t_cur'), cur, function(v){ return v===cur ? String(cur) : String(Math.round(v)); }); gid('t_goal').textContent=goal;
+  if(goal>0){
+    var pct=Math.min(100,Math.round(cur/goal*100));
+    gid('t_bar').style.width=pct+'%'; var tc=gid('targetCard'); if(tc) tc.style.setProperty('--p', pct);
+    if(cur>=goal){ m.textContent='✅ وصلت للهدف! ('+pct+'%)'+(cur>goal?' — زيادة '+r(cur-goal)+' ساعة':''); m.style.color='var(--green)'; }
+    else { m.textContent='⏳ باقي '+r(goal-cur)+' ساعة ('+pct+'%)'; m.style.color='var(--amber)'; }
+  } else { gid('t_bar').style.width='0%'; var tc0=gid('targetCard'); if(tc0) tc0.style.setProperty('--p',0); m.textContent='💡 حدد هدفك من تاب الضبط'; m.style.color='var(--muted)'; }
+  renderSahar(s.sahar);
+  renderMoneyBar_(s);
+  renderChart_(s.history);
+}
+
+// [v7.5] شريط المبلغ المقسّم (نهاري/ليلي/أجازات) + النسب
+function renderMoneyBar_(s){
+  var bar=gid('m_bar'); if(!bar) return;
+  var v=[num(s.amtDay),num(s.amtNight),num(s.amtHol)], t=v[0]+v[1]+v[2];
+  var cols=['var(--c-blue)','var(--c-violet)','var(--c-amber)'];
+  bar.className='segbar'+(t>0?'':' empty');
+  bar.innerHTML = t>0 ? v.map(function(x,i){ return x>0 ? '<i style="flex-grow:'+x+';background:'+cols[i]+'"></i>' : ''; }).join('') : '';
+  ['m_pd','m_pn','m_ph'].forEach(function(id,i){ var e=gid(id); if(e) e.textContent = t>0 ? Math.round(v[i]/t*100)+'%' : ''; });
+}
+// [v7.5] الأوفرتايم شهر بشهر (آخر 6 فترات)
+function renderChart_(h){
+  var el=gid('otChart'); if(!el) return;
+  if(!h || !h.length){ el.innerHTML='<p class="hint">لسه مفيش بيانات</p>'; return; }
+  var mx=Math.max.apply(null,h.map(function(x){ return num(x.ot); }).concat([1]));
+  var bars='', xs='';
+  h.forEach(function(x){
+    var pct=Math.round(num(x.ot)/mx*100);
+    bars+='<div class="col'+(x.cur?' cur':'')+'" title="'+esc(x.name)+': '+esc(x.ot)+' ساعة — '+esc(fmtMoney(x.amt))+' جنيه"><span class="v">'+(num(x.ot)?esc(r(num(x.ot))):'')+'</span><div class="bar" style="height:'+Math.max(2,pct)+'%"></div></div>';
+    xs+='<span'+(x.cur?' class="cur"':'')+'>'+esc(x.name)+'</span>';
+  });
+  el.innerHTML='<div class="chart">'+bars+'</div><div class="chart-x">'+xs+'</div>';
+}
+
+// ═══ السجل: إضافة يوم / إجازة / إعادة حساب ═══
+function addDay(){
+  var date=gv('a_date'); if(!date){ notify('er','حدد التاريخ'); return; }
+  var btn=gid('addDayBtn'); busy_(btn,true,'جاري الرفع...');
+  readFile(gid('a_photoIn'), function(pIn){
+    readFile(gid('a_photoOut'), function(pOut){
+      readFile(gid('a_doc'), function(docData){
+        var d={date:date, in:gv('a_in'), out:gv('a_out'), outDate:gv('a_outdate'), notes:gv('a_notes')};
+        if(gid('a_issub').checked){ d.isSubstitute=true; d.holidayName=gv('a_holsel')||gv('a_holname')||''; }
+        if(pIn){ d.photoInData=pIn.data; d.photoInName=pIn.name; }
+        if(pOut){ d.photoOutData=pOut.data; d.photoOutName=pOut.name; }
+        if(docData){ d.docData=docData.data; d.docName=docData.name; }
+        var lost=[];
+        if(gid('a_photoIn').files[0] && !pIn) lost.push('بصمة الحضور');
+        if(gid('a_photoOut').files[0] && !pOut) lost.push('بصمة الانصراف');
+        if(gid('a_doc').files[0] && !docData) lost.push('الورقة');
+        google.script.run
+          .withSuccessHandler(function(rz){
+            busy_(btn,false);
+            notify(rz.ok?'ok':'er', rz.msg + (lost.length?'\n⚠️ متعرفش تقرا: '+lost.join('، '):''));
+            if(rz.ok){
+              ['a_in','a_out','a_outdate','a_notes','a_photoIn','a_photoOut','a_doc','a_holsel','a_holname'].forEach(function(k){ gid(k).value=''; });
+              gid('a_issub').checked=false; gid('subBox').style.display='none';
+              loadLog(); loadStats(); offerUndo();
+            }
+          })
+          .withFailureHandler(function(e){ busy_(btn,false); notify('er','❌ '+msgOf(e)); })
+          .addManualDay(d);
+      });
+    });
+  });
+}
+function addLeave(){
+  var from=gv('l_from'), to=gv('l_to');
+  if(!from||!to){ notify('er','حدد من وإلى'); return; }
+  var btn=gid('addLeaveBtn'); busy_(btn,true);
+  google.script.run
+    .withSuccessHandler(function(rz){ busy_(btn,false); notify(rz.ok?'ok':'er',rz.msg); if(rz.ok){ loadLog(); loadStats(); offerUndo(); } })
+    .withFailureHandler(function(e){ busy_(btn,false); notify('er','❌ '+msgOf(e)); })
+    .addManualLeave({from:from, to:to, type:gv('l_type')});
+}
+function recalc(){
+  var btn=gid('recalcBtn'); busy_(btn,true,'جاري الحساب...');
+  google.script.run
+    .withSuccessHandler(function(rz){ busy_(btn,false); notify(rz.ok?'ok':'er', rz.msg); loadLog(); loadStats(); })
+    .withFailureHandler(function(e){ busy_(btn,false); notify('er','❌ '+msgOf(e)); })
+    .recalcFromUI();
+}
+
+// ═══ تعديل / حذف يوم (بالمفتاح الثابت للصف) ═══
+function editDay(rowNum){
+  gid('e_rowNum').value=rowNum; gid('e_expect').value=''; gid('e_key').value='';
+  gid('e_title').textContent='✏️ تعديل';
+  ['e_in','e_out','e_outdate','e_notes','e_photoIn','e_photoOut','e_doc','e_holname','e_paper'].forEach(function(k){ gid(k).value=''; });
+  gid('e_issub').checked=false; gid('e_holname').style.display='none';
+  gid('e_hasimg').textContent=''; gid('e_note').textContent=''; gid('saveEditBtn').disabled=true;
+  gid('editModal').style.display='flex';
+  google.script.run
+    .withSuccessHandler(function(d){
+      if(!d){ notify('er','مش لاقي اليوم — حدّث السجل'); closeEdit(); return; }
+      gid('e_title').textContent='✏️ تعديل '+d.date;
+      gid('e_expect').value=d.expectDate; gid('e_key').value=d.key||'';
+      gid('e_in').value=d.in; gid('e_out').value=d.out;
+      gid('e_outdate').value=d.outDate; gid('e_notes').value=d.notes||'';
+      gid('e_issub').checked=!!d.isSubstitute; togEditSub(); fillEditExtra_(d);
+      gid('e_hasimg').textContent=(d.hasPhotoIn?'📸 حضور ✓  ':'')+(d.hasPhotoOut?'📸 انصراف ✓  ':'')+(d.hasDoc?'📄 ورقة ✓':'');
+      gid('saveEditBtn').disabled=false;
+    })
+    .withFailureHandler(function(e){ notify('er','❌ '+msgOf(e)); closeEdit(); })
+    .getDayForEdit(rowNum);
+}
+function closeEdit(){ gid('editModal').style.display='none'; }
+function saveEdit(){
+  var btn=gid('saveEditBtn'); busy_(btn,true);
+  readFile(gid('e_photoIn'),function(pIn){
+    readFile(gid('e_photoOut'),function(pOut){
+      readFile(gid('e_doc'),function(doc){
+        var d={ rowNum:parseInt(gid('e_rowNum').value,10), expectDate:gv('e_expect'), key:gv('e_key'),
+                in:gv('e_in'), out:gv('e_out'), outDate:gv('e_outdate'), notes:gv('e_notes'),
+                isSubstitute:gid('e_issub').checked, holidayName:gv('e_holname'), paperStatus:gv('e_paper') };
+        if(pIn){ d.photoInData=pIn.data; d.photoInName=pIn.name; }
+        if(pOut){ d.photoOutData=pOut.data; d.photoOutName=pOut.name; }
+        if(doc){ d.docData=doc.data; d.docName=doc.name; }
+        google.script.run
+          .withSuccessHandler(function(rz){ busy_(btn,false); notify(rz.ok?'ok':'er',rz.msg); if(rz.ok){ closeEdit(); loadLog(); loadStats(); offerUndo(); } })
+          .withFailureHandler(function(e){ busy_(btn,false); notify('er','❌ '+msgOf(e)); })
+          .updateDay(d);
+      });
+    });
+  });
+}
+function delDay(){
+  if(!confirm('متأكد إنك عايز تمسح اليوم ده نهائياً؟')) return;
+  google.script.run
+    .withSuccessHandler(function(rz){ notify(rz.ok?'ok':'er',rz.msg); if(rz.ok){ closeEdit(); loadLog(); loadStats(); offerUndo(); } })
+    .withFailureHandler(function(e){ notify('er','❌ '+msgOf(e)); })
+    .deleteDay(parseInt(gid('e_rowNum').value,10), gv('e_expect'), gv('e_key'));
+}
+
+// ═══ التقرير ═══
+function rpt(fn){
+  var v=gv('r_my'); if(!v){ notify('er','أدخل الشهر/السنة (مثال 7/2026)'); return; }
+  notify('ok','⏳ جاري...');
+  google.script.run.withSuccessHandler(handleRpt).withFailureHandler(function(e){ notify('er','❌ '+msgOf(e)); })[fn](v,_lang,_money);
+}
+function act2(fn){
+  notify('ok','⏳ جاري...');
+  google.script.run.withSuccessHandler(handleRpt).withFailureHandler(function(e){ notify('er','❌ '+msgOf(e)); })[fn](_lang,_money);
+}
+/** جوه الشيت السيرفر بيفتح التقرير في نافذة لوحده؛ في الموبايل بيرجّع الـ HTML ونفتحه في تاب جديد */
+function handleRpt(rz){
+  if(!rz || !rz.ok){ notify('er', rz ? rz.msg : '❌ فشل'); return; }
+  if(rz.html) openReport(rz.html); else notify('ok', rz.msg);
+}
+function openReport(html){
+  var w=window.open('','_blank');
+  if(w){ w.document.write(html); w.document.close(); }
+  else notify('er','⚠️ اسمح بالنوافذ المنبثقة (pop-ups) في المتصفح');
+}
+
+// ═══ الإعدادات ═══
+function loadSet(s){
+  if(!s) return;
+  sv('c_project',s[K.PROJECT]); sv('c_email',s[K.EMAIL]); sv('c_repday',s[K.REPORT_DAY]);
+  sv('c_ws',s[K.WORK_START]); sv('c_we',s[K.WORK_END]);
+  sv('c_shift',s[K.SHIFT]); sv('c_ns',s[K.NSHIFT_START]); sv('c_ne',s[K.NSHIFT_END]);
+  sv('c_nps',s[K.NIGHT_FROM]); sv('c_npe',s[K.NIGHT_TO]);
+  sv('c_fd',s[K.F_DAY]); sv('c_fn',s[K.F_NIGHT]); sv('c_fh',s[K.F_HOL]);
+  sv('c_rt',s[K.RATE]); sv('c_br',s[K.BREAK_MIN]); sv('c_lt',s[K.LATE_LIMIT]);
+  sv('c_sd',s[K.CLOSE_FROM]); sv('c_ed',s[K.CLOSE_TO]);
+  sv('c_target',s[K.TARGET]); sv('c_extmethod',s[K.EXT_METHOD]);
+  sv('c_sth',s[K.SAHAR_TH]); sv('c_sper',s[K.SAHAR_PER]);
+  if(!gv('c_hy')) sv('c_hy', new Date().getFullYear());
+  var offOut = String(s[K.GRACE_OUT]||'')==='0' && !String(s[K.RULES_OUT]||'').trim();
+  var offIn  = String(s[K.GRACE_IN]||'')==='0'  && !String(s[K.RULES_IN]||'').trim();
+  gid('c_noround').checked = (offOut && offIn);
+  togRound();
+  fillRules('ro', s[K.RULES_OUT], s[K.GRACE_OUT]);
+  fillRules('ri', s[K.RULES_IN],  s[K.GRACE_IN]);
+  tsh();
+  fillNewSet_(s);
+}
+function save(){
+  var btn=gid('saveBtn');
+  var ro=rulesStr('ro'), ri=rulesStr('ri'), noRound=gid('c_noround').checked;
+  if(!noRound && (ro.bad.length || ri.bad.length)){ notify('er','❌ قواعد التقريب:\n• '+ro.bad.concat(ri.bad).join('\n• ')); return; }
+  busy_(btn,true,'جاري الحفظ...');
+  var d={};
+  d[K.PROJECT]=gv('c_project'); d[K.EMAIL]=gv('c_email'); d[K.REPORT_DAY]=gv('c_repday');
+  d[K.WORK_START]=gv('c_ws'); d[K.WORK_END]=gv('c_we'); d[K.SHIFT]=gv('c_shift');
+  d[K.NSHIFT_START]=gv('c_ns'); d[K.NSHIFT_END]=gv('c_ne');
+  d[K.NIGHT_FROM]=gv('c_nps'); d[K.NIGHT_TO]=gv('c_npe');
+  d[K.F_DAY]=gv('c_fd'); d[K.F_NIGHT]=gv('c_fn'); d[K.F_HOL]=gv('c_fh');
+  d[K.RATE]=gv('c_rt'); d[K.BREAK_MIN]=gv('c_br'); d[K.LATE_LIMIT]=gv('c_lt');
+  d[K.CLOSE_FROM]=gv('c_sd'); d[K.CLOSE_TO]=gv('c_ed');
+  d[K.TARGET]=gv('c_target'); d[K.EXT_METHOD]=gv('c_extmethod');
+  d[K.SAHAR_TH]=gv('c_sth'); d[K.SAHAR_PER]=gv('c_sper');
+  d[K.RULES_OUT]= noRound ? '' : ro.str;
+  d[K.RULES_IN] = noRound ? '' : ri.str;
+  // [v7.7] دقايق التقريب بتتبعت بس لما التقريب مقفول — قبل كده كانت بتتبعت فاضية فكل حفظ يقول "اتخطّت خانات فاضية"
+  if(noRound){ d[K.GRACE_OUT]='0'; d[K.GRACE_IN]='0'; }
+  var nx=newSetValues_(); for(var k in nx) d[k]=nx[k];
+  google.script.run
+    .withSuccessHandler(function(rz){ busy_(btn,false); notify(rz.ok?'ok':'er',rz.msg); if(rz.ok) loadStats(); })
+    .withFailureHandler(function(e){ busy_(btn,false); notify('er','❌ '+msgOf(e)); })
+    .saveSettingsUI(d);
+}
+function tsh(){ var s=gv('c_shift'); gid('dF').style.display = s==='ليلي' ? 'none' : 'block'; gid('nF').style.display = s==='ليلي' ? 'block' : 'none'; }
+
+// ═══ [v7.2] خصوصية الصور ═══
+function renderPrivacy_(v){
+  var el=gid('pv_state'); if(!el) return;
+  var pub=String(v||'خاص').trim()==='رابط';
+  el.className='fz-state'+(pub?'':' on');
+  el.innerHTML = pub ? '🔗 الصور <b>بلينك</b> — أي حد معاه لينك الصورة يقدر يشوفها' : '🔐 الصور <b>خاصة</b> — إنت بس اللي تقدر تشوفها (والتقرير بالإيميل بيحطها جوه الرسالة)';
+}
+function setPrivacy(mode){
+  if(!confirm(mode==='خاص' ? 'تخلّي كل الصور خاصة؟ (اللينكات القديمة اللي اتبعتت لحد مش هتفتح معاه)' : 'تخلّي كل الصور بلينك؟ أي حد معاه لينك صورة هيقدر يشوفها.')) return;
+  notify('ok','⏳ جاري تطبيق الخصوصية على الصور...');
+  google.script.run
+    .withSuccessHandler(function(rz){ notify(rz.ok?'ok':'er', rz.msg); if(rz.ok) renderPrivacy_(mode); })
+    .withFailureHandler(function(e){ notify('er','❌ '+msgOf(e)); })
+    .setImagesPrivacy(mode);
+}
+</script>
+
+<style>
+/* ═══ WebApp (موبايل) v7.5 — ستايل المحفظة: عنوان كبير، لوحات مسطّحة، تابات عائمة + زرار "سجّل" ═══ */
+body{font-size:14px;min-height:100dvh;display:flex;flex-direction:column;overflow-x:hidden}
+html,body{overflow-anchor:none}   /* الصفحة ماتتزحلقش لوحدها لما البيانات تتحدّث */
+.hdr{position:sticky;top:0;z-index:50;padding:calc(14px + env(safe-area-inset-top,0px)) 18px 10px;background:transparent;transition:background .25s,border-color .25s;border-bottom:1px solid transparent}
+.hdr.scrolled{background:color-mix(in srgb,var(--bg) 62%,transparent);-webkit-backdrop-filter:saturate(160%) blur(16px);backdrop-filter:saturate(160%) blur(16px);border-bottom-color:var(--line)}
+.hdr-in{max-width:480px;margin:0 auto;display:flex;align-items:center;gap:10px}
+.hdr-txt{flex:1;min-width:0}
+.hdr h1{font-size:32px;font-weight:800;letter-spacing:-.8px;line-height:1.15;transition:font-size .25s}
+.hdr.scrolled h1{font-size:22px}
+.hdr .sub{font-size:13.5px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600}
+.rbtn{position:relative;width:46px;height:46px;border-radius:50%;border:1px solid var(--g-edge);background:var(--glass);-webkit-backdrop-filter:blur(20px) saturate(170%);backdrop-filter:blur(20px) saturate(170%);color:var(--txt);display:grid;place-items:center;cursor:pointer;flex-shrink:0;transition:transform .15s}
+.rbtn:active{transform:scale(.92)}
+.rbtn .ic{width:20px;height:20px}
+.rbtn.spin .ic{animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.theme-btn{position:relative;width:46px;height:46px;border-radius:50%;background:var(--glass);border:1px solid var(--g-edge);box-shadow:none;-webkit-backdrop-filter:blur(20px) saturate(170%);backdrop-filter:blur(20px) saturate(170%)}
+.oq{display:inline-flex;align-items:center;gap:5px;background:rgba(244,184,96,.12);color:var(--c-amber);border:1px solid rgba(244,184,96,.25);border-radius:99px;padding:8px 12px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.content{flex:1;padding:8px 16px calc(118px + env(safe-area-inset-bottom,0px));max-width:480px;margin:0 auto;width:100%}
+
+/* شريط التابات العائم (كبسولة) + زرار "سجّل" المستدير منفصل على الشمال */
+.tabbar{position:fixed;right:12px;left:calc(12px + 78px);bottom:calc(12px + env(safe-area-inset-bottom,0px));max-width:378px;margin-inline-start:auto;display:flex;gap:2px;padding:6px;background:var(--glass);border:1px solid var(--g-edge);border-radius:99px;box-shadow:0 20px 44px -18px rgba(0,0,0,.6);z-index:50;-webkit-backdrop-filter:blur(26px) saturate(190%);backdrop-filter:blur(26px) saturate(190%)}
+.tb-ind{position:absolute;top:6px;bottom:6px;right:0;width:0;border-radius:99px;background:rgba(127,127,140,.2);box-shadow:inset 0 1px 0 rgba(255,255,255,.22);transition:transform .45s cubic-bezier(.3,1.35,.5,1),width .45s cubic-bezier(.3,1.35,.5,1);pointer-events:none}
+@media (min-width:520px){ .tabbar{right:calc(50% - 228px)} .fab{left:calc(50% - 228px)} }
+.tb{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px 7px;border:0;background:none;color:var(--muted);font-size:10.5px;font-weight:700;cursor:pointer;border-radius:99px;transition:background .2s,color .2s}
+.tb .ti{display:grid;place-items:center;height:22px}
+.tb .ti .ic{width:21px;height:21px}
+.tb.on{color:var(--txt)}
+.tb:active .ti{transform:scale(.88)} .tb .ti{transition:transform .2s}
+.tb.on .ti .ic{stroke-width:2.3}
+
+.fab{position:fixed;left:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:51;width:70px;height:70px;border-radius:50%;border:0;cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;font-size:11.5px;font-weight:800;color:#fff;
+  --fc:var(--c-blue);background:radial-gradient(120% 90% at 30% 10%,rgba(255,255,255,.55),rgba(255,255,255,0) 46%),color-mix(in srgb,var(--fc) 82%,transparent);
+  -webkit-backdrop-filter:blur(16px) saturate(180%);backdrop-filter:blur(16px) saturate(180%);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.6),inset 0 -6px 14px rgba(0,0,0,.18),0 16px 34px -12px color-mix(in srgb,var(--fc) 90%,transparent);transition:transform .25s cubic-bezier(.3,1.4,.5,1),box-shadow .3s;-webkit-tap-highlight-color:transparent;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+.fab .ic{width:24px;height:24px;stroke-width:2.4}
+.fab:active{transform:scale(.88)}
+.fab.out{--fc:var(--c-red)}
+.fab::after{content:'';position:absolute;inset:0;border-radius:50%;padding:1px;pointer-events:none;background:linear-gradient(150deg,rgba(255,255,255,.85),rgba(255,255,255,.1) 35%,transparent 60%,rgba(255,255,255,.35));-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude}
+.fab.out::before{content:'';position:absolute;inset:-6px;border-radius:50%;border:2px solid color-mix(in srgb,var(--fc) 55%,transparent);animation:fabRing 2.4s ease-out infinite;pointer-events:none}
+@keyframes fabRing{0%{transform:scale(.92);opacity:.9}100%{transform:scale(1.25);opacity:0}}
+.fab.busy{pointer-events:none;opacity:.75}
+.fab.busy .ic{animation:spin .8s linear infinite}
+.fab.okpulse{animation:fabOk .6s}
+@keyframes fabOk{0%{box-shadow:0 0 0 0 rgba(98,211,148,.75)}100%{box-shadow:0 0 0 22px rgba(98,211,148,0)}}
+[data-theme="dark"] .fab{color:#06101f}
+[data-theme="dark"] .fab.out{color:#1a0705}
+
+/* ═══ كارت النهاردة (زي "صافي ثروتك"): رقم ضخم + شريط اليوم + زرار تسجيل بلمسة ═══ */
+.hero-act{position:relative;overflow:hidden;isolation:isolate;padding:18px 18px 16px;margin-bottom:10px;color:var(--txt);--gc:var(--c-blue)}
+.hero-act::before{content:'';position:absolute;z-index:-1;width:260px;height:260px;top:-120px;left:-80px;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--gc) 42%,transparent),transparent);filter:blur(10px);transition:background .6s;animation:glowB 7s ease-in-out infinite alternate}
+@keyframes glowB{to{transform:translate(40px,30px) scale(1.15)}}
+.hero-act.open{--gc:var(--c-green)} .hero-act.stale{--gc:var(--c-red)} .hero-act.done{--gc:var(--c-violet)}
+.ha-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.ha-state{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:700;padding:6px 11px;border-radius:99px;white-space:nowrap;background:rgba(127,127,140,.12);border:1px solid var(--g-edge);color:var(--muted)}
+.hero-act.open .ha-state{color:var(--c-green);background:rgba(98,211,148,.1);border-color:rgba(98,211,148,.2)}
+.hero-act.stale .ha-state{color:var(--c-red);background:rgba(239,106,91,.1);border-color:rgba(239,106,91,.22)}
+.hero-act.done .ha-state{color:var(--c-blue);background:rgba(91,141,239,.1);border-color:rgba(91,141,239,.2)}
+.ha-timer{direction:ltr;text-align:right;margin-top:10px;font-size:64px;letter-spacing:-2.5px}
+.hero-act.open .ha-timer{text-shadow:0 0 28px color-mix(in srgb,var(--c-green) 40%,transparent)}
+.hero-act.open .ha-timer{color:var(--num-pos)}
+.hero-act.stale .ha-timer{color:var(--num-neg)}
+.ha-io{display:flex;gap:16px;flex-wrap:wrap}
+.ha-io b{font-variant-numeric:tabular-nums}
+#dayBar{margin-top:14px}
+.act-row{display:flex;gap:10px;margin-top:16px}
+.act-main{position:relative;flex:1;border:0;border-radius:20px;padding:15px;box-shadow:inset 0 1px 1px rgba(255,255,255,.45),0 12px 26px -14px var(--c-blue);background-image:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,0) 55%)!important;font-size:16px;font-weight:800;display:flex;align-items:center;justify-content:center;gap:10px;cursor:pointer;background:var(--c-blue);color:#fff;transition:transform .12s,background-color .3s}
+.act-main .ic{width:22px;height:22px}
+.act-main:active,.act-cam:active{transform:scale(.97)}
+.hero-act.open .act-main,.hero-act.stale .act-main{background-color:var(--c-red);box-shadow:inset 0 1px 1px rgba(255,255,255,.45),0 12px 26px -14px var(--c-red)}
+.hero-act.done .act-main{background-color:rgba(127,127,140,.14);color:var(--txt);box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
+[data-theme="dark"] .hero-act:not(.done) .act-main{color:#08101c}
+.act-main.okpulse{animation:okPulse .7s}
+.act-cam{width:54px;flex-shrink:0;border-radius:20px;border:1px solid var(--g-edge);background:rgba(127,127,140,.12);box-shadow:inset 0 1px 0 rgba(255,255,255,.12);color:var(--txt);display:grid;place-items:center;cursor:pointer}
+.act-cam .ic{width:22px;height:22px}
+.act-hint{text-align:center;font-size:11.5px;color:var(--faint);margin-top:8px}
+.act-alt{display:block;margin:8px auto 0;background:none;border:0;color:var(--muted);font-size:12px;font-weight:600;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+
+.quick{display:flex;gap:8px;margin-bottom:12px}
+.quick .btn{margin:0}
+#camCard{border-color:var(--line2)}
+.undo-bar{bottom:calc(96px + env(safe-area-inset-bottom,0px))}
+.hero-act .today-chip{background:rgba(244,184,96,.12);color:var(--c-amber);border:1px solid rgba(244,184,96,.2)}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-in">
+    <div class="hdr-txt"><h1 id="pgTitle">الرئيسية</h1><div class="sub"><span id="h_date"></span><span id="h_period" style="display:none"></span></div></div>
+    <button type="button" class="oq" id="oqPill" style="display:none" onclick="oqFlush_(true)"></button>
+    <button type="button" class="rbtn" id="refBtn" onclick="refreshPage_()" aria-label="تحديث" data-ic="refresh"></button>
+    <button type="button" class="theme-btn" id="themeBtn" onclick="cycleTheme()" aria-label="تغيير الثيم"></button>
+  </div>
+</header>
+
+<main class="content">
+
+<!-- ═══ الرئيسية ═══ -->
+<div id="p-home" class="pane on">
+  <div id="warnBox"></div>
+
+  <!-- كارت النهاردة (ستايل المحفظة): رقم ضخم + شريط اليوم + تسجيل بلمسة واحدة -->
+  <section class="hero-act tile" id="actCard" aria-live="polite">
+    <div class="ha-top"><span class="big-lbl" id="actSub">الساعة دلوقتي</span><span class="ha-state" id="actState">…</span></div>
+    <div class="ha-timer big-num" id="actTimer">--:--</div>
+    <div class="big-sub ha-io"><span>حضور <b id="h_in">—</b></span><span>انصراف <b id="h_out">—</b></span><span id="h_today" style="display:none"></span></div>
+    <div id="dayBar" style="display:none"><div class="segbar" id="d_bar"></div><div class="seg-legend" id="d_leg"></div></div>
+    <div id="chipHost"></div>
+    <div class="act-row">
+      <button type="button" class="act-main" id="actBtn" onclick="quickToggle_()"><span id="actIc" style="display:contents"></span><span id="actLbl">سجّل حضور</span></button>
+      <button type="button" class="act-cam" id="actCam" onclick="doCheck(_actType)" aria-label="تسجيل مع صورة البصمة" title="تسجيل مع صورة البصمة" data-ic="camera"></button>
+    </div>
+    <div class="act-hint">لمسة واحدة بتسجّل بالوقت الحالي · 📷 لو عايز تصوّر البصمة</div>
+    <button type="button" class="act-alt" id="actAlt" onclick="doCheck('out')">نسيت تسجّل الحضور؟ سجّل انصراف</button>
+  </section>
+
+  <div class="card" id="camCard" style="display:none">
+    <div class="ct" id="camTitle">📷 تسجيل</div>
+    <div class="f"><label>📸 صورة البصمة (اختياري)</label><input type="file" id="camInput" accept="image/*" data-hint="اختياري — سجّل على طول أو صوّر البصمة" onchange="onPhotoSelected(this)"></div>
+    <div id="camStatus" class="hint" style="margin:-4px 0 10px"></div>
+    <button type="button" class="btn bg" onclick="confirmCheck()" id="confirmBtn">✅ تسجيل</button>
+    <button type="button" class="btn bs" onclick="cancelCam()">❌ إلغاء</button>
+  </div>
+
+  <div id="needHost"></div>
+
+  <div class="quick">
+    <button type="button" class="btn bs" onclick="toggleQuick('paper')">📎 ورقة أوفرتايم</button>
+    <button type="button" class="btn bs" onclick="toggleQuick('leave')">🏖️ تسجيل إجازة</button>
+  </div>
+
+  <div class="card" id="paperCard" style="display:none">
+    <div class="ct">📎 ورقة أوفرتايم ليوم واحد</div>
+    <p class="hint" style="margin:-6px 0 10px">مستقلة عن عدّاد أيام السهر — لأي يوم أوفرتايم عايز توثّقه لوحده</p>
+    <div class="f"><label for="p_date">التاريخ</label><input type="date" id="p_date"></div>
+    <div class="f"><label>📷 صورة الورقة</label><input type="file" id="p_file" accept="image/*"></div>
+    <button type="button" class="btn bg" onclick="submitPaper()" id="paperBtn">📤 رفع</button>
+    <button type="button" class="btn bs" onclick="toggleQuick('paper')">❌ إلغاء</button>
+  </div>
+
+  <div class="card" id="leaveCard" style="display:none">
+    <div class="ct">🏖️ تسجيل إجازة</div>
+    <div class="row"><div class="f"><label for="q_from">من</label><input type="date" id="q_from"></div><div class="f"><label for="q_to">إلى</label><input type="date" id="q_to"></div></div>
+    <div class="f"><label for="q_type">نوع الإجازة</label><select id="q_type"><option>سنوية</option><option>مرضية</option><option>طارئة</option><option>بدون راتب</option><option>رسمية</option></select></div>
+    <button type="button" class="btn bg" onclick="submitQuickLeave()" id="leaveBtn">🏖️ تسجيل</button>
+    <button type="button" class="btn bs" onclick="toggleQuick('leave')">❌ إلغاء</button>
+    <p class="hint">الحد الأقصى 60 يوم في المرة — الإجازة الأسبوعية والأعياد والأيام اللي عليها حضور أو إجازة بالفعل بتتخطّى</p>
+  </div>
+
+<!-- ═══ HomeCards.html — كروت الرئيسية المشتركة — v7.6 Bento (مربعات بمقاسات مختلفة زي الويدجتس) ═══ -->
+<div class="bento">
+
+  <!-- المبلغ (نص عرض) -->
+  <section class="tile t-money">
+    <div class="t-lbl"><span class="t-ic" style="--tc:var(--c-green)" data-ic="wallet"></span>المبلغ المتوقع</div>
+    <div class="t-num pos"><span id="m_total">0</span></div>
+    <div class="t-sub">جنيه · الفترة الحالية</div>
+    <div class="segbar empty" id="m_bar"></div>
+  </section>
+
+  <!-- هدف الأوفرتايم: حلقة تقدّم (نص عرض) -->
+  <section class="tile t-ot" id="targetCard" onclick="showStat('ota')" role="button" tabindex="0">
+    <div class="t-lbl"><span class="t-ic" style="--tc:var(--c-amber)" data-ic="target"></span>الأوفرتايم</div>
+    <div class="ring3"><div class="ring3-c"><b id="t_cur">0</b><small>من <span id="t_goal">0</span> س</small></div></div>
+    <div class="t-msg" id="t_msg"></div>
+    <div id="t_bar" hidden></div>
+  </section>
+
+  <!-- 4 مربعات صغيرة -->
+  <div class="quad">
+    <button type="button" class="tile mini-t" onclick="showStat('att')"><span class="dot" style="background:var(--c-blue)"></span><b id="s_att">0</b><span>حضور</span></button>
+    <button type="button" class="tile mini-t" onclick="showStat('abs')"><span class="dot" style="background:var(--c-red)"></span><b id="s_abs">0</b><span>غياب</span></button>
+    <button type="button" class="tile mini-t" onclick="showStat('lv')"><span class="dot" style="background:var(--c-pink)"></span><b id="s_lv">0</b><span>إجازة</span></button>
+    <button type="button" class="tile mini-t" onclick="showStat('late')"><span class="dot" style="background:var(--c-amber)"></span><b id="s_late">0</b><span>تأخير</span></button>
+  </div>
+
+  <!-- توزيع المبلغ (عرض كامل) -->
+  <section class="tile span2">
+    <div class="panel-h"><span class="t">المبلغ جاي منين؟</span><span class="s">بالجنيه</span></div>
+    <div class="lrow" onclick="showStat('otd')" role="button" tabindex="0"><span class="nm"><span class="dot" style="background:var(--c-blue)"></span>نهاري<span class="pc" id="m_pd"></span></span><span><span class="vl" id="m_day">0</span><span class="chev">‹</span></span></div>
+    <div class="lrow" onclick="showStat('otn')" role="button" tabindex="0"><span class="nm"><span class="dot" style="background:var(--c-violet)"></span>ليلي<span class="pc" id="m_pn"></span></span><span><span class="vl" id="m_night">0</span><span class="chev">‹</span></span></div>
+    <div class="lrow" onclick="showStat('oth')" role="button" tabindex="0"><span class="nm"><span class="dot" style="background:var(--c-amber)"></span>أجازات<span class="pc" id="m_ph"></span></span><span><span class="vl" id="m_hol">0</span><span class="chev">‹</span></span></div>
+  </section>
+
+  <!-- الساعات (نص عرض) -->
+  <section class="tile t-hours">
+    <div class="t-lbl"><span class="t-ic" style="--tc:var(--c-blue)" data-ic="clock"></span>الساعات</div>
+    <div class="hrow" onclick="showStat('otd')"><span><span class="dot" style="background:var(--c-blue)"></span>نهاري</span><b id="s_otd">0</b></div>
+    <div class="hrow" onclick="showStat('otn')"><span><span class="dot" style="background:var(--c-violet)"></span>ليلي</span><b id="s_otn">0</b></div>
+    <div class="hrow" onclick="showStat('oth')"><span><span class="dot" style="background:var(--c-amber)"></span>أجازات</span><b id="s_oth">0</b></div>
+  </section>
+
+  <!-- الأوراق (نص عرض) -->
+  <section class="tile t-pap" onclick="showStat('pap')" role="button" tabindex="0">
+    <div class="t-lbl"><span class="t-ic" style="--tc:var(--c-red)" data-ic="clip"></span>أوراق ناقصة</div>
+    <div class="t-num neg"><span id="s_pap">0</span></div>
+    <div class="t-sub">إجمالي الأوفرتايم <b id="s_ota">0</b> س</div>
+  </section>
+
+  <!-- الرسم البياني (عرض كامل) -->
+  <section class="tile span2">
+    <div class="panel-h"><span class="t">الأوفرتايم فترة بفترة</span><span class="s">آخر 6 فترات</span></div>
+    <div id="otChart"><p class="hint">…</p></div>
+  </section>
+</div>
+<div class="hint" id="s_note" style="text-align:center;margin-top:2px"></div>
+<div class="hint" id="s_note2" style="text-align:center;margin:2px 0 12px"></div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     Panes.html — التابات المشتركة بين WebApp و SettingsSidebar (v7.2)
+     السجل + التقرير + الضبط + نافذة التعديل + نافذة المهام
+     بيتحمّل بـ include('Panes') — المنطق بتاعها كله في Shared.html
+     ═══════════════════════════════════════════════════════ -->
+
+<!-- ═══ السجل ═══ -->
+<div id="p-log" class="pane">
+  <div class="card">
+    <div class="ct">📅 السجل</div>
+    <div id="logPager"></div>
+    <div id="loglist"><div class="ld"><div class="sp"></div>جاري التحميل...</div></div>
+  </div>
+
+  <div class="card">
+    <div class="ct">➕ إضافة يوم سابق</div>
+    <div class="f"><label for="a_date">التاريخ (يوم الحضور)</label><input type="date" id="a_date"></div>
+    <div class="row">
+      <div class="f"><label for="a_in">حضور</label><input type="time" id="a_in"></div>
+      <div class="f"><label for="a_out">انصراف</label><input type="time" id="a_out"></div>
+    </div>
+    <div class="f"><label for="a_outdate">تاريخ الانصراف (لو مشيت يوم تاني)</label><input type="date" id="a_outdate"><p class="hint">سيبها فاضية — لو الانصراف قبل الحضور (وردية ليلية) بيتحسب اليوم اللي بعده تلقائي</p></div>
+    <div class="f"><label for="a_notes">ملاحظات (اختياري)</label><input type="text" id="a_notes"></div>
+    <div class="f soft amber">
+      <label class="chk"><input type="checkbox" id="a_issub" onchange="togSub()"> 🕌 ده بديل إجازة رسمية</label>
+      <div id="subBox" style="display:none;margin-top:10px">
+        <select id="a_holsel" aria-label="الإجازة"><option value="">— اختر الإجازة أو اكتبها تحت —</option></select>
+        <input type="text" id="a_holname" placeholder="أو اكتب اسم الإجازة" style="margin-top:6px">
+        <p class="hint">اليوم ده هيتحسب بفاكتور الأجازات الرسمية</p>
+      </div>
+    </div>
+    <div class="f"><label>📷 بصمة الحضور</label><input type="file" id="a_photoIn" accept="image/*"></div>
+    <div class="f"><label>📷 بصمة الانصراف</label><input type="file" id="a_photoOut" accept="image/*"></div>
+    <div class="f"><label>📎 ورقة HR</label><input type="file" id="a_doc" accept="image/*"></div>
+    <button type="button" class="btn bg" onclick="addDay()" id="addDayBtn">➕ إضافة اليوم</button>
+    <p class="hint">الصور بتتضغط قبل الرفع (800px) عشان متتقلش على النت</p>
+  </div>
+
+  <div class="card">
+    <div class="ct">🏖️ إضافة إجازة سابقة</div>
+    <div class="row">
+      <div class="f"><label for="l_from">من</label><input type="date" id="l_from"></div>
+      <div class="f"><label for="l_to">إلى</label><input type="date" id="l_to"></div>
+    </div>
+    <div class="f"><label for="l_type">نوع الإجازة</label><select id="l_type"><option>سنوية</option><option>مرضية</option><option>طارئة</option><option>بدون راتب</option><option>رسمية</option></select></div>
+    <button type="button" class="btn bo" onclick="addLeave()" id="addLeaveBtn">🏖️ إضافة الإجازة</button>
+    <p class="hint">الحد الأقصى 60 يوم في المرة — الإجازة الأسبوعية والأعياد والأيام اللي عليها حضور أو إجازة بالفعل بتتخطّى</p>
+  </div>
+  <button type="button" class="btn bs" onclick="recalc()" id="recalcBtn">🧮 إعادة حساب كل الأوفرتايم</button>
+</div>
+
+<!-- ═══ نافذة التعديل ═══ -->
+<div id="editModal" class="sheet-back bottom" style="display:none" onclick="if(event.target===this)closeEdit()">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="e_title">
+    <div class="sheet-hd">
+      <span id="e_title">✏️ تعديل</span>
+      <button type="button" class="xbtn" onclick="closeEdit()" aria-label="إغلاق">✕</button>
+    </div>
+    <input type="hidden" id="e_rowNum"><input type="hidden" id="e_expect"><input type="hidden" id="e_key">
+    <div class="row"><div class="f"><label for="e_in">حضور</label><input type="time" id="e_in"></div><div class="f"><label for="e_out">انصراف</label><input type="time" id="e_out"></div></div>
+    <div class="f"><label for="e_outdate">تاريخ الانصراف</label><input type="date" id="e_outdate"></div>
+    <div class="f"><label for="e_notes">ملاحظات</label><input type="text" id="e_notes"></div>
+    <div class="f"><label for="e_paper">📋 حالة ورقة HR</label><select id="e_paper"><option value="">—</option><option value="مطلوبة">مطلوبة</option><option value="اتبعتت لـ HR">اتبعتت لـ HR</option><option value="موقّعة">موقّعة</option></select></div>
+    <div id="e_note" class="hint" style="margin:0 0 10px;font-weight:600"></div>
+    <div class="f soft amber">
+      <label class="chk"><input type="checkbox" id="e_issub" onchange="togEditSub()"> 🕌 اليوم ده بديل إجازة رسمية</label>
+      <input type="text" id="e_holname" placeholder="اسم الإجازة" aria-label="اسم الإجازة" style="margin-top:8px;display:none">
+    </div>
+    <div id="e_hasimg" class="hint" style="color:var(--green);font-weight:600;margin:0 0 8px"></div>
+    <div class="f"><label>📷 بصمة حضور جديدة</label><input type="file" id="e_photoIn" accept="image/*"></div>
+    <div class="f"><label>📷 بصمة انصراف جديدة</label><input type="file" id="e_photoOut" accept="image/*"></div>
+    <div class="f"><label>📎 ورقة HR جديدة</label><input type="file" id="e_doc" accept="image/*"></div>
+    <button type="button" class="btn bg" onclick="saveEdit()" id="saveEditBtn">💾 حفظ التعديل</button>
+    <div class="seg">
+      <button type="button" class="btn br" id="e_delBtn" onclick="delDay()">🗑️ حذف اليوم</button>
+      <button type="button" class="btn bs" onclick="closeEdit()">إلغاء</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ نافذة المهام (أيام ناقصة + ورق الإجازات + ورق السهر) ═══ -->
+<div id="taskSheet" class="sheet-back bottom" style="display:none" onclick="if(event.target===this)closeTasks()">
+  <div class="sheet" role="dialog" aria-modal="true" aria-label="المهام">
+    <div class="sheet-hd">
+      <span>📌 المهام</span>
+      <button type="button" class="xbtn" onclick="closeTasks()" aria-label="إغلاق">✕</button>
+    </div>
+    <div id="tasksEmpty" class="sm-empty" style="display:none">مفيش مهام دلوقتي 👌</div>
+    <div class="card" id="saharCard" style="display:none">
+      <div class="ct">🌙 أيام السهر — ورقة الأوفرتايم</div>
+      <div class="hint" style="margin:-6px 0 8px" id="sh_period"></div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline">
+        <span style="font-size:26px;font-weight:800;color:var(--pri);font-variant-numeric:tabular-nums" id="sh_cur">0</span>
+        <span class="hint" style="margin:0">من <span id="sh_per">5</span> أيام للورقة</span>
+      </div>
+      <div class="bar" style="margin-top:6px"><div class="fill" id="sh_bar" style="width:0%"></div></div>
+      <div id="sh_dates" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px"></div>
+      <div class="hint" id="sh_hint">اضغط على الأيام اللي الورقة بتغطيها، أو سيبها من غير اختيار وهتتسجل على الدفعة التلقائية (المظلّلة)</div>
+      <div id="sh_alert" class="alert-warn" style="display:none">⚠️ اكتملت الأيام — اطلب ورقة الأوفرتايم من HR، وبعد التوقيع ارفعها هنا</div>
+      <div class="f" style="margin-top:10px"><label>📎 صورة ورقة السهر (ورقة واحدة = <span id="sh_per2">5</span> أيام)</label><input type="file" id="sh_file" accept="image/*"></div>
+      <button type="button" class="btn bo" id="sh_btn" onclick="uploadSahar()">📤 رفع ورقة السهر</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ التقرير ═══ -->
+<div id="p-rpt" class="pane">
+  <div class="card">
+    <div class="ct">🌐 شكل التقرير</div>
+    <div class="seg" style="margin-bottom:8px">
+      <button type="button" class="btn bp" id="lang_ar" onclick="setLang('ar')">🇪🇬 عربي</button>
+      <button type="button" class="btn bs" id="lang_en" onclick="setLang('en')">🇬🇧 English</button>
+    </div>
+    <div class="seg">
+      <button type="button" class="btn bp" id="money_on" onclick="setMoney(true)">💰 بالفلوس</button>
+      <button type="button" class="btn bs" id="money_off" onclick="setMoney(false)">⏱️ ساعات بس</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ct">⚡ الفترة الحالية</div>
+    <button type="button" class="btn bp" onclick="act2('showCurrentReport')">👁️ عرض التقرير</button>
+    <button type="button" class="btn bs" onclick="act2('sendCurrentReport')">📧 إرسال بالإيميل</button>
+  </div>
+  <div class="card">
+    <div class="ct">📑 شهر معيّن</div>
+    <div class="f"><label for="r_my">الشهر/السنة</label><input type="text" id="r_my" placeholder="7/2026" inputmode="numeric" dir="ltr"></div>
+    <div class="seg">
+      <button type="button" class="btn bs" onclick="rpt('showReport')">👁️ عرض</button>
+      <button type="button" class="btn bs" onclick="rpt('emailReport')">📧 إرسال</button>
+    </div>
+    <p class="hint">التقرير فيه: الساعات الخام + المبلغ بعد الفاكتور + صور الإثبات</p>
+  </div>
+</div>
+
+<!-- ═══ الضبط ═══ -->
+<div id="p-set" class="pane">
+  <div class="card">
+    <div class="ct">🏗️ المشروع</div>
+    <div class="f"><label for="c_project">اسم المشروع</label><input type="text" id="c_project"></div>
+    <div class="f"><label for="c_email">إيميل التقرير والتنبيهات</label><input type="email" id="c_email" dir="ltr"></div>
+    <div class="f"><label for="c_repday">📧 يوم إرسال التقرير</label><input type="number" id="c_repday" min="1" max="28"><p class="hint">لو التريجر فشل اليوم ده، التقرير هيتبعت أول ما يقدر — مش هيضيع</p></div>
+  </div>
+
+  <div class="card">
+    <div class="ct">🕐 الشفت</div>
+    <div class="f"><label for="c_shift">نوع الشفت</label><select id="c_shift" onchange="tsh()"><option value="نهاري">نهاري</option><option value="ليلي">ليلي</option></select></div>
+    <div id="dF"><div class="row"><div class="f"><label for="c_ws">بداية العمل</label><input type="time" id="c_ws" value="08:00"></div><div class="f"><label for="c_we">نهاية العمل</label><input type="time" id="c_we" value="17:00"></div></div></div>
+    <div id="nF" style="display:none"><div class="row"><div class="f"><label for="c_ns">بداية الليل</label><input type="time" id="c_ns" value="20:00"></div><div class="f"><label for="c_ne">نهاية الليل</label><input type="time" id="c_ne" value="08:00"></div></div></div>
+    <div class="row"><div class="f"><label for="c_br">مدة الراحة (دق) — لو غير مدفوعة</label><input type="number" id="c_br" min="0" max="300"></div><div class="f"><label for="c_lt">حد التأخير (دق)</label><input type="number" id="c_lt" min="0" max="240"></div></div>
+    <p class="hint">التأخير بيتعلّم على اليوم في عمود "نوع اليوم" — حط 0 لتعطيله</p>
+  </div>
+  <div id="newSetBox1"></div>
+
+  <div class="card">
+    <div class="ct">🌙 الفترة الليلية (فاكتور الليل)</div>
+    <div class="row"><div class="f"><label for="c_nps">من</label><input type="time" id="c_nps" value="22:00"></div><div class="f"><label for="c_npe">إلى</label><input type="time" id="c_npe" value="06:00"></div></div>
+    <p class="hint">أي ساعة أوفرتايم في المدى ده بتتحسب ليلي — سواء قبل الدوام (حضور بدري) أو بعده</p>
+  </div>
+
+  <div class="card">
+    <div class="ct">💰 الفاكتورات والسعر</div>
+    <div class="row"><div class="f"><label for="c_fd">نهاري ☀️</label><input type="number" id="c_fd" step="0.1" min="1" max="10"></div><div class="f"><label for="c_fn">ليلي 🌙</label><input type="number" id="c_fn" step="0.1" min="1" max="10"></div></div>
+    <div class="row"><div class="f"><label for="c_fh">أجازات 🏖️</label><input type="number" id="c_fh" step="0.1" min="1" max="10"></div><div class="f"><label for="c_rt">سعر الساعة</label><input type="number" id="c_rt" min="1"></div></div>
+    <div class="f"><label for="c_target">🎯 هدف ساعات الأوفرتايم الشهري</label><input type="number" id="c_target" min="0"></div>
+    <div class="f"><label for="c_extmethod">🌙 طريقة الوردية الممتدة (24 ساعة)</label><select id="c_extmethod"><option value="متصلة">متصلة (كله أوفرتايم ليوم الحضور)</option><option value="مفصولة">مفصولة (اليوم التاني يبقى عادي)</option></select></div>
+  </div>
+
+  <div class="card">
+    <div class="ct">🌙 أيام السهر (ورقة HR)</div>
+    <div class="row"><div class="f"><label for="c_sth">يوم سهر = OT ≥ (ساعة)</label><input type="number" id="c_sth" step="0.5" min="0" max="24"></div><div class="f"><label for="c_sper">عدد الأيام للورقة</label><input type="number" id="c_sper" min="1" max="31"></div></div>
+    <p class="hint">اليوم بيتحسب "سهر" لو إجمالي الأوفرتايم فيه ≥ الحد ده</p>
+  </div>
+
+  <div class="card">
+    <div class="ct">🕐 قواعد التقريب</div>
+    <label class="chk soft red" style="margin-bottom:12px"><input type="checkbox" id="c_noround" onchange="togRound()"> ⛔ إيقاف التقريب تماماً (الوقت يتسجل زي ما هو)</label>
+    <div id="roundBox">
+      <div class="hint" style="font-weight:700;color:var(--txt);margin-bottom:6px">🏠 رنجات تقريب الانصراف</div>
+      <div id="roRows"></div>
+      <div class="hint" style="font-weight:700;color:var(--txt);margin:10px 0 6px">⏰ رنجات تقريب الحضور</div>
+      <div id="riRows"></div>
+      <p class="hint">الرنجات بالدقايق جوه الساعة وبتتكرر كل ساعة. مثال (الافتراضي): من 0 إلى 20 تتحسب 0 (8:05 ← 8:00) · من 21 إلى 50 تتحسب 30 (8:25 ← 8:30) · من 51 إلى 59 تتحسب 60 = أول الساعة الجاية (8:55 ← 9:00) · سيب الصف فاضي لإلغاء القاعدة</p>
+    </div>
+  </div>
+
+  <div id="newSetBox2"></div>
+
+  <div class="card">
+    <div class="ct">📑 فترة التقفيل</div>
+    <div class="row"><div class="f"><label for="c_sd">من يوم</label><input type="number" id="c_sd" min="1" max="31"></div><div class="f"><label for="c_ed">إلى يوم</label><input type="number" id="c_ed" min="1" max="31"></div></div>
+    <p class="hint">المعتاد: من 21 إلى 20 (الفترة بتعبر شهرين). لو "من" أصغر من "إلى" هيبقى في أيام في الشهر مش داخلة أي تقرير.</p>
+  </div>
+
+  <div id="newSetBox3"></div>
+
+  <div class="card">
+    <div class="ct">🔐 خصوصية الصور</div>
+    <div class="fz-state" id="pv_state"></div>
+    <p class="hint" style="margin-bottom:10px">"خاص" (المُوصى بيه): صور البصمة وورق HR بتاعتك بس — التطبيق بيعرضها عادي، والتقرير بالإيميل بيحطها جوه الرسالة نفسها. "رابط": أي حد معاه لينك الصورة يقدر يفتحها. الزرار بيطبّق على كل الصور القديمة كمان.</p>
+    <div class="seg">
+      <button type="button" class="btn bs" onclick="setPrivacy('خاص')">🔐 خاص</button>
+      <button type="button" class="btn bo" onclick="setPrivacy('رابط')">🔗 رابط</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="ct">🕌 الأعياد والإجازات الرسمية</div>
+    <p class="hint" style="margin:-4px 0 10px">الأعياد الهجرية تقريبية وبتتغيّر حسب الرؤية — عدّل التاريخ لما الرسمي يتحدد. أي تعديل بيعيد حساب أيام السجل المتأثرة تلقائياً.</p>
+    <div class="action-row">
+      <div class="f" style="margin:0;flex:1"><label for="c_hy">السنة</label><input type="number" id="c_hy" min="2020" max="2100"></div>
+      <button type="button" class="btn bs" onclick="loadHols()" style="width:auto;margin:0;padding:11px 14px;white-space:nowrap">🔄 عرض</button>
+      <button type="button" class="btn bo" onclick="hols()" style="width:auto;margin:0;padding:11px 14px;white-space:nowrap">➕ توليد</button>
+    </div>
+    <div id="holList" style="margin-top:10px"></div>
+    <div style="border-top:1px dashed var(--line2);margin-top:10px;padding-top:10px">
+      <div class="hint" style="font-weight:700;color:var(--txt);margin-bottom:6px">➕ عيد جديد</div>
+      <div class="holrow new">
+        <input type="date" id="nh_date" aria-label="تاريخ العيد">
+        <input type="text" id="nh_name" placeholder="اسم المناسبة" aria-label="اسم المناسبة">
+        <button type="button" class="hsave" onclick="addHol()" aria-label="إضافة">➕</button>
+      </div>
+    </div>
+    <button type="button" class="btn br" onclick="clearApprox()" style="margin-top:6px">🗑️ حذف الأعياد التقريبية للسنة دي</button>
+  </div>
+
+  <button type="button" class="btn bp" onclick="save()" id="saveBtn">💾 حفظ الإعدادات</button>
+</div>
+
+
+</main>
+
+<nav class="tabbar" aria-label="التابات">
+  <span class="tb-ind" id="tbInd" aria-hidden="true"></span>
+  <button type="button" class="tb on" onclick="tab('home')" aria-current="page"><span class="ti" data-ic="home"></span>الرئيسية</button>
+  <button type="button" class="tb" onclick="tab('log')"><span class="ti" data-ic="calendar"></span>السجل</button>
+  <button type="button" class="tb" onclick="tab('rpt')"><span class="ti" data-ic="report"></span>التقرير</button>
+  <button type="button" class="tb" onclick="tab('set')"><span class="ti" data-ic="settings"></span>الضبط</button>
+</nav>
+<button type="button" class="fab" id="fab" aria-label="سجّل حضور"><span id="fabIc" style="display:contents"></span><span id="fabLbl">حضور</span></button>
+
+<script>
+var _lastStats=0, _lang='ar', _money=true, _holsLoaded=false;
+
+// الواجهة دي بتعرض رسائلها كـ toast منبثق — الدوال المشتركة في Shared.html بتنادي notify()
+function notify(t,m){ toast(t,m); }
+
+// ═══ Init: طلب واحد للإعدادات والإحصائيات ═══
+buildRuleRows();
+injectNewSettings_();
+injectHomeCards_();
+// [v7.3] آخر بيانات اتعرضت متخزّنة على الموبايل → الشاشة بتظهر فورًا (حتى من غير نت) وبعدين بتتحدّث من السيرفر
+var BOOT_KEY='hr_boot';
+function bootCache_(){ try{ return JSON.parse(localStorage.getItem(BOOT_KEY)||'null'); }catch(e){ return null; } }
+function saveBoot_(part){ try{ var c=bootCache_()||{}; for(var k in part) c[k]=part[k]; c.at=Date.now(); localStorage.setItem(BOOT_KEY, JSON.stringify(c)); }catch(e){} }
+function renderCachedBoot_(){   // بتتنادى في آخر السكريبت (بعد ما كل المتغيرات تتجهّز)
+  var c=bootCache_(); if(!c || !c.settings || !c.stats) return;
+  try{
+    var st=c.stats; if(st.openShift && c.at) st.openShift.hours += (Date.now()-c.at)/36e5;   // العدّاد يكمّل من الوقت الصح
+    loadSet(c.settings); renderStats_(st, true);
+  }catch(e){}
+}
+google.script.run
+  .withSuccessHandler(function(b){ loadSet(b.settings); renderStats_(b.stats); saveBoot_({settings:b.settings}); oqUpdate_(); oqFlush_(); })
+  .withFailureHandler(function(e){ toast('er', isNetErr_(e) ? '📴 مفيش نت — تقدر تسجّل حضور/انصراف وهيتبعتوا أول ما النت يرجع' : '❌ خطأ في التحميل: '+msgOf(e)); oqUpdate_(); renderSmartOffline_(); })
+  .getBootData();
+
+// ═══ Tabs ═══
+function tab(id){
+  var ids=['home','log','rpt','set'], titles={home:'الرئيسية',log:'السجل',rpt:'التقرير',set:'الضبط'};
+  gid('pgTitle').textContent=titles[id]||'';
+  var btns=document.querySelectorAll('.tb');
+  for(var i=0;i<btns.length;i++){ var on=ids[i]===id; btns[i].classList.toggle('on', on); if(on) btns[i].setAttribute('aria-current','page'); else btns[i].removeAttribute('aria-current'); }
+  moveInd_();
+  var panes=document.querySelectorAll('.pane');
+  for(var j=0;j<panes.length;j++) panes[j].classList.remove('on');
+  gid('p-'+id).classList.add('on');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(id==='home') loadStats();
+  if(id==='log')  loadLog();
+  if(id==='set' && !_holsLoaded){ _holsLoaded=true; loadHols(); }
+}
+
+// [v7.6] كبسولة زجاج بتتزحلق تحت التاب المختار
+function moveInd_(){
+  var b=document.querySelector('.tb.on'), ind=gid('tbInd'); if(!b||!ind) return;
+  var bar=b.parentNode.getBoundingClientRect(), r=b.getBoundingClientRect();
+  ind.style.width=r.width+'px'; ind.style.transform='translateX('+(r.left-bar.left-1)+'px)'; ind.style.right='auto'; ind.style.left='0';
+}
+window.addEventListener('resize', moveInd_);
+requestAnimationFrame(moveInd_);
+if(document.fonts && document.fonts.ready) document.fonts.ready.then(moveInd_);
+
+// ═══ [v7.5] الهيدر: عنوان الصفحة + تاريخ النهاردة بالعربي + تحديث ═══
+var AR_DAYS=['الأحد','الاتنين','التلات','الأربع','الخميس','الجمعة','السبت'];
+var AR_MON=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+function hdrDate_(){ var d=new Date(); gid('h_date').textContent=AR_DAYS[d.getDay()]+' '+d.getDate()+' '+AR_MON[d.getMonth()]; }
+hdrDate_();
+function refreshPage_(){
+  var b=gid('refBtn'); b.classList.add('spin'); setTimeout(function(){ b.classList.remove('spin'); }, 900);
+  hdrDate_(); oqFlush_();
+  var cur=document.querySelector('.pane.on'); var id=cur ? cur.id.replace('p-','') : 'home';
+  if(id==='log') loadLog(); else if(id==='set'){ loadHols(); loadStats(true); } else loadStats(true);
+}
+
+// ═══ الداشبورد ═══
+function loadStats(showMsg){
+  google.script.run
+    .withSuccessHandler(function(s){ if(!s) return; renderStats_(s); if(showMsg) toast('ok','✅ تم التحديث'); })
+    .withFailureHandler(function(e){ toast('er', isNetErr_(e) ? '📴 مفيش نت دلوقتي' : '❌ تعذر تحميل الإحصائيات: '+msgOf(e)); })
+    .getStats();
+}
+function renderStats_(s, fromCache){
+  if(!fromCache){ _lastStats=Date.now(); saveBoot_({stats:s}); }
+  gid('h_period').textContent=s.period;
+  gid('h_today').textContent=s.today;
+  gid('h_in').textContent=s.todayIn; gid('h_out').textContent=s.todayOut;
+  renderHomeStats_(s);
+  renderSmart_(s);
+}
+
+// ═══ [v7.2] الكارت الذكي ═══
+var _actType='in', _smart=null, _tick=null;
+function hm_(t){ var p=String(t||'').split(':'); return p.length>1 ? (+p[0])*60+(+p[1]) : NaN; }
+function dur_(ms, secs){ var s=Math.max(0,Math.floor(ms/1000)), h=Math.floor(s/3600), m=Math.floor(s%3600/60), x=s%60; return h+':'+(m<10?'0':'')+m+(secs?':'+(x<10?'0':'')+x:''); }
+function renderSmart_(s){
+  var o=s.openShift, hasIn=s.todayIn && s.todayIn!=='—', hasOut=s.todayOut && s.todayOut!=='—';
+  var mode = o ? (o.stale ? 'stale' : 'open') : (hasIn && hasOut ? 'done' : 'idle');
+  _actType = o ? 'out' : 'in';
+  _smart = {mode:mode, o:o, s:s, at:Date.now()};
+  gid('actCard').className='hero-act tile '+mode;
+  gid('actIc').innerHTML=ic(o?'logout':'login');
+  gid('actLbl').textContent = o ? 'سجّل انصراف' : (mode==='done' ? 'سجّل حضور (شفت تاني)' : 'سجّل حضور');
+  renderFab_();
+  gid('actAlt').style.display = o ? 'none' : 'block';
+  gid('actState').textContent = o ? (o.stale ? '⚠️ مفتوح من بدري' : '🟢 شغّال دلوقتي') : (mode==='done' ? '✅ خلّصت النهاردة' : (s.todayLeave ? '🏖️ إجازة' : '⚪ لسه مسجلتش'));
+  var sub='';
+  if(o) sub='شغّال من '+o.in+(o.date && o.date!==s.today ? ' ('+o.date+')' : '')+(o.stale ? ' — نسيت الانصراف؟' : '');
+  else if(mode==='done') sub='مدة الشغل النهاردة';
+  else sub='الساعة دلوقتي';
+  gid('actSub').textContent=sub;
+  clearInterval(_tick); tickSmart_(); _tick=setInterval(tickSmart_, 1000);
+}
+function tickSmart_(){
+  if(!_smart || document.hidden) return;
+  renderDayBar_();
+  var el=gid('actTimer'), m=_smart.mode;
+  if(m==='open'||m==='stale'){ var o=_smart.o; el.textContent=dur_(o.hours*36e5 + (Date.now()-_smart.at), true); }
+  else if(m==='done'){ var a=hm_(_smart.s.todayIn), b=hm_(_smart.s.todayOut); var d=b-a; if(d<0) d+=1440; el.textContent=isNaN(d)?'—':dur_(d*6e4,false); }
+  else { var n=new Date(); el.textContent=(n.getHours()<10?'0':'')+n.getHours()+':'+(n.getMinutes()<10?'0':'')+n.getMinutes(); }
+}
+/** مدة الدوام الرسمي (بالدقايق) من إعدادات الشفت */
+function shiftMins_(){
+  var night = gv('c_shift')==='ليلي';
+  var a=hm_(night ? (gv('c_ns')||'20:00') : (gv('c_ws')||'08:00')), b=hm_(night ? (gv('c_ne')||'08:00') : (gv('c_we')||'17:00'));
+  var d=b-a; if(isNaN(d)) return 540; if(d<=0) d+=1440; return d;
+}
+/** [v7.5] شريط اليوم المقسّم: دوام اتعمل / باقي / أوفرتايم */
+var _dayBarKey='';
+function renderDayBar_(){
+  var host=gid('dayBar'); if(!host || !_smart) return;
+  var m=_smart.mode, worked=NaN;
+  if(m==='open'||m==='stale') worked=(_smart.o.hours*36e5 + (Date.now()-_smart.at))/6e4;
+  else if(m==='done'){ var a=hm_(_smart.s.todayIn), b=hm_(_smart.s.todayOut); worked=b-a; if(worked<0) worked+=1440; }
+  if(isNaN(worked) || m==='stale' || (m==='done' && worked<1)){ host.style.display='none'; _dayBarKey=''; return; }
+  var sh=shiftMins_(), w=Math.max(0,Math.floor(worked)), reg=Math.min(w,sh), ot=Math.max(0,w-sh), left=Math.max(0,sh-w);
+  var key=reg+'|'+ot+'|'+left; if(key===_dayBarKey) return; _dayBarKey=key;
+  host.style.display='block';
+  var segs=[[reg,'var(--c-green)'],[ot,'var(--c-amber)'],[left,'var(--card3)']], html='';
+  segs.forEach(function(x){ if(x[0]>0) html+='<i style="flex-grow:'+x[0]+';background:'+x[1]+'"></i>'; });
+  gid('d_bar').innerHTML=html;
+  var f=function(mn){ return Math.floor(mn/60)+':'+String(mn%60).padStart(2,'0'); };
+  gid('d_leg').innerHTML='<span><span class="dot" style="background:var(--c-green)"></span>دوام '+f(reg)+'</span>'
+    +(ot?'<span><span class="dot" style="background:var(--c-amber)"></span>أوفرتايم '+f(ot)+'</span>':'')
+    +(left?'<span><span class="dot" style="background:var(--card3)"></span>فاضل '+f(left)+'</span>':'');
+}
+function renderSmartOffline_(){ if(!_smart) renderSmart_({openShift:null,todayIn:'—',todayOut:'—',today:''}); }
+/** تحديث فوري بعد التسجيل (قبل ما الإحصائيات ترجع من السيرفر) */
+function applyLocal_(type, hhmm, pending){
+  var s=(_smart && _smart.s) ? JSON.parse(JSON.stringify(_smart.s)) : {today:'',todayIn:'—',todayOut:'—'};
+  if(type==='in'){ s.todayIn=hhmm; s.todayOut='—'; s.openShift={in:hhmm, date:s.today, hours:0, stale:false}; }
+  else { s.todayOut=hhmm; s.openShift=null; if(!s.todayIn || s.todayIn==='—') s.todayIn='—'; }
+  gid('h_in').textContent=s.todayIn; gid('h_out').textContent=s.todayOut;
+  renderSmart_(s);
+  if(pending) gid('actState').textContent = typeof pending==='string' ? pending : '📴 مستني النت';
+  var b=gid('actBtn'); b.classList.remove('okpulse'); void b.offsetWidth; b.classList.add('okpulse');
+  var f=gid('fab'); if(f){ f.classList.remove('okpulse'); void f.offsetWidth; f.classList.add('okpulse'); }
+  try{ navigator.vibrate && navigator.vibrate(35); }catch(e){}
+}
+
+// ═══ [v7.5] التسجيل السريع: لمسة واحدة على "سجّل" = حضور أو انصراف بالوقت الحالي ═══
+var _qBusy=false, _qLast=0, _qLastType='';
+function renderFab_(){
+  var f=gid('fab'); if(!f) return;
+  var out=_actType==='out';
+  f.classList.toggle('out', out);
+  gid('fabIc').innerHTML=ic(out?'logout':'login');
+  gid('fabLbl').textContent= out ? 'انصراف' : 'حضور';
+  f.setAttribute('aria-label', out ? 'سجّل انصراف دلوقتي' : 'سجّل حضور دلوقتي');
+  f.title=(out ? 'سجّل انصراف' : 'سجّل حضور')+' — ضغطة طويلة: مع صورة البصمة';
+}
+function quickToggle_(type){
+  type = type || _actType;
+  if(_qBusy || _checkSending){ toast('er','⏳ في تسجيل شغال دلوقتي — ثانية واحدة'); return; }
+  var now=Date.now(), hhmm=hhmmNow_(now);
+  // حماية من الضغطة المزدوجة: لو لسه مسجّل من أقل من دقيقة، اسأل الأول
+  if(now-_qLast < 60000 && _qLastType && _qLastType!==type &&
+     !confirm('انت لسه مسجّل '+(_qLastType==='in'?'حضور':'انصراف')+' من ثواني — تسجّل '+(type==='in'?'حضور':'انصراف')+' كمان؟')) return;
+  if(type==='out' && _smart && _smart.mode==='stale' &&
+     !confirm('الحضور مفتوح من '+_smart.o.in+(_smart.o.date?' ('+_smart.o.date+')':'')+' — تسجّل الانصراف دلوقتي '+hhmm+'؟\n(لو نسيت تسجّله في وقته، عدّله من السجل بعد كده)')) return;
+  _qLast=now; _qLastType=type;
+  var fn = type==='in' ? 'quickCheckIn' : 'quickCheckOut';
+  var item={fn:fn, type:type, id:opId_(), ts:now, photo:null};
+  // [v7.7] لو فيه تسجيلات أوفلاين لسه مستنية: الجديد يدخل وراها في الطابور — لو اتبعت مباشرة كان ممكن
+  // الانصراف يوصل السيرفر قبل الحضور اللي اتسجّل أوفلاين، فيتعمل "انصراف من غير حضور" + حضور مفتوح
+  if(oqGet_().length){ oqAdd_(item, true); applyLocal_(type, hhmm, '⏳ في الطابور'); oqFlush_(); return; }
+  _qBusy=true;
+  var f=gid('fab'); f.classList.add('busy'); gid('fabIc').innerHTML=ic('refresh');
+  applyLocal_(type, hhmm, '⏳ بيتسجّل...');    // الشاشة بتتحدّث فورًا
+  var done=function(){ _qBusy=false; f.classList.remove('busy'); renderFab_(); };
+  google.script.run
+    .withSuccessHandler(function(r){
+      done();
+      toast(r.ok?'ok':'er', r.msg);
+      if(r.ok){ applyLocal_(r.kind||type, r.time||hhmm, false); offerUndo(); loadLog(); }
+      else _qLast=0;
+      loadStats();
+    })
+    .withFailureHandler(function(e){
+      done();
+      if(isNetErr_(e)){ oqAdd_(item); applyLocal_(type, hhmm, true); }
+      else { _qLast=0; toast('er','❌ '+msgOf(e)); loadStats(); }
+    })
+    [fn](null, {id:item.id});
+}
+// ضغطة عادية = تسجيل فوري · ضغطة طويلة = تسجيل مع صورة البصمة
+(function(){
+  var f=gid('fab'), t=null, long=false;
+  var start=function(){ long=false; clearTimeout(t); t=setTimeout(function(){ long=true; try{ navigator.vibrate && navigator.vibrate(20); }catch(e){} tab('home'); doCheck(_actType); }, 600); };
+  var cancel=function(){ clearTimeout(t); };
+  f.addEventListener('pointerdown', start); f.addEventListener('pointerup', cancel); f.addEventListener('pointerleave', cancel); f.addEventListener('pointercancel', cancel);
+  f.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+  f.addEventListener('click', function(){ if(long){ long=false; return; } quickToggle_(); });
+  renderFab_();
+})();
+
+// ═══ حضور / انصراف (مع صورة البصمة) ═══
+var _checkType='', _photoData='', _photoBusy=false, _checkSending=false;
+function doCheck(type){
+  if(_checkSending){ toast('er','⏳ في تسجيل شغال دلوقتي — استنى يخلص الأول'); return; }
+  _checkType=type; _photoData=''; _photoBusy=false;
+  gid('camTitle').textContent = type==='in' ? '⏰ تسجيل حضور' : '🏠 تسجيل انصراف';
+  gid('camInput').value=''; gid('camStatus').textContent='';
+  gid('confirmBtn').disabled=false;
+  gid('camCard').style.display='block';
+  gid('camCard').scrollIntoView({behavior:'smooth',block:'center'});
+}
+// [M18] الزرار بيتقفل لحد ما الصورة تخلص — مفيش تسجيل من غير صورة بالغلط
+function onPhotoSelected(input){
+  if(!input.files || !input.files[0]){ _photoData=''; gid('camStatus').textContent=''; return; }
+  _photoBusy=true; _photoData='';
+  gid('confirmBtn').disabled=true;
+  gid('camStatus').textContent='⏳ جاري تجهيز الصورة...';
+  readImg(input, function(data){
+    _photoBusy=false; gid('confirmBtn').disabled=false;
+    if(!data){ _photoData=''; gid('camStatus').textContent='⚠️ الصورة كبيرة جدًا أو الملف تالف — تقدر تسجّل من غير صورة أو تجرّب صورة تانية'; input.value=''; return; }
+    _photoData=data; gid('camStatus').textContent='✅ الصورة جاهزة';
+  });
+}
+function cancelCam(){
+  if(_checkSending){ toast('er','⏳ في تسجيل شغال دلوقتي، مينفعش يتلغي — استنى الرد'); return; }
+  gid('camCard').style.display='none'; _photoData=''; _checkType=''; _photoBusy=false;
+}
+function confirmCheck(){
+  if(_photoBusy){ toast('er','⏳ استنى الصورة تخلص'); return; }
+  if(_checkSending){ toast('er','⏳ في تسجيل شغال بالفعل — استنى الرد'); return; }
+  var type=_checkType, fn = type==='in' ? 'quickCheckIn' : 'quickCheckOut';
+  var item={fn:fn, type:type, id:opId_(), ts:Date.now(), photo:_photoData||null};
+  if(oqGet_().length){ oqAdd_(item, true); cancelCam(); applyLocal_(type, hhmmNow_(item.ts), '⏳ في الطابور'); oqFlush_(); return; }   // [v7.7] نفس ترتيب الطابور
+  _checkSending=true;
+  var btn=gid('confirmBtn'); busy_(btn,true,'جاري التسجيل...');
+  google.script.run
+    .withSuccessHandler(function(r){
+      _checkSending=false; busy_(btn,false);
+      toast(r.ok?'ok':'er', r.msg);
+      if(r.ok){ cancelCam(); if(r.time) applyLocal_(r.kind||type, r.time, false); loadStats(); loadLog(); offerUndo(); }
+      else loadStats();   // [v7.7] الرفض معناه إن الحالة اللي على الشاشة قديمة
+    })
+    .withFailureHandler(function(e){
+      _checkSending=false; busy_(btn,false);
+      if(isNetErr_(e)){ oqAdd_(item); cancelCam(); applyLocal_(type, hhmmNow_(item.ts), true); }
+      else toast('er','❌ '+msgOf(e));
+    })
+    [fn](item.photo, {id:item.id});
+}
+function hhmmNow_(ts){ var d=new Date(ts); return (d.getHours()<10?'0':'')+d.getHours()+':'+(d.getMinutes()<10?'0':'')+d.getMinutes(); }
+
+// ═══ [v7.2] التسجيل من غير نت: بيتحفظ على الموبايل بوقته الحقيقي ويتبعت أول ما النت يرجع ═══
+var OQ_KEY='hr_queue', _oqBusy=false;
+function opId_(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,9); }
+function isNetErr_(e){ var m=msgOf(e); return (typeof navigator!=='undefined' && navigator.onLine===false) || /NetworkError|network|HTTP 0|Failed to fetch|Load failed|timed? ?out|connection/i.test(m); }
+function oqGet_(){ try{ return JSON.parse(localStorage.getItem(OQ_KEY)||'[]'); }catch(e){ return []; } }
+function oqSet_(a){ try{ localStorage.setItem(OQ_KEY, JSON.stringify(a)); return true; }catch(e){ return false; } }
+function oqAdd_(item, behind){
+  if(behind) item.behind=true;
+  var q=oqGet_(); q.push(item);
+  if(!oqSet_(q)){ item.photo=null; q[q.length-1]=item; if(!oqSet_(q)){ toast('er','❌ مساحة الموبايل مش كفاية لحفظ التسجيل — جرّب تاني'); return; }
+    toast('er','📴 اتحفظ التسجيل من غير الصورة (المساحة مش كفاية)'); }
+  else if(behind) toast('ok','⏳ اتسجّل '+hhmmNow_(item.ts)+' — بيتبعت بعد التسجيلات اللي كانت مستنية');
+  else toast('ok','📴 مفيش نت — التسجيل اتحفظ على الموبايل بوقته ('+hhmmNow_(item.ts)+') وهيتبعت أول ما النت يرجع');
+  oqUpdate_();
+}
+function oqUpdate_(){
+  var n=oqGet_().length, p=gid('oqPill');
+  if(!p) return;
+  p.style.display = n ? 'inline-flex' : 'none';
+  p.innerHTML = n ? ic('offline')+' '+n+' مستني النت' : '';
+  p.title='اضغط عشان تبعت دلوقتي';
+}
+function oqFlush_(manual){
+  if(_oqBusy) return;
+  var q=oqGet_(); if(!q.length){ oqUpdate_(); return; }
+  _oqBusy=true;
+  var it=q[0];
+  google.script.run
+    .withSuccessHandler(function(r){
+      _oqBusy=false;
+      var rest=oqGet_().filter(function(x){ return x.id!==it.id; }); oqSet_(rest); oqUpdate_();
+      toast(r.ok?'ok':'er', (r.ok?'📶 اتبعت: ':'⚠️ ماتسجلش: ')+r.msg);
+      if(rest.length) oqFlush_(); else { loadStats(); loadLog(); }
+    })
+    .withFailureHandler(function(e){
+      _oqBusy=false;
+      if(isNetErr_(e)){ if(manual) toast('er','📴 لسه مفيش نت'); return; }
+      // [v7.7] قبل كده أي خطأ غير النت كان بيمسح التسجيل من الطابور في صمت (حتى لو السبب إن الربط محتاج يتجدد)
+      if(e && (e.code==='AUTH' || e.code==='SETUP')){ toast('er','🔒 التسجيلات اللي مستنية محفوظة — هتتبعت بعد ما تربط التطبيق تاني'); return; }
+      var q=oqGet_(), x=null; for(var i=0;i<q.length;i++) if(q[i].id===it.id) x=q[i];
+      if(x) x.tries=(x.tries||0)+1;
+      if(!x || x.tries>=3){
+        oqSet_(q.filter(function(y){ return y.id!==it.id; }));
+        toast('er','❌ '+(it.type==='in'?'الحضور':'الانصراف')+' بتاع '+hhmmNow_(it.ts)+' ماتسجلش ('+msgOf(e)+') — سجّله يدوي من تاب السجل');
+      } else { oqSet_(q); if(manual) toast('er','❌ '+msgOf(e)+' — هجرّب تاني'); }
+      oqUpdate_();
+    })
+    [it.fn](it.photo, {id:it.id, ts:it.ts, offline:!it.behind});
+}
+window.addEventListener('online', function(){ oqFlush_(); });
+
+// ═══ ورقة أوفرتايم / إجازة سريعة من الرئيسية ═══
+function todayStr_(){ var d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function toggleQuick(which){
+  var ids={paper:'paperCard', leave:'leaveCard'};
+  Object.keys(ids).forEach(function(k){
+    var el=gid(ids[k]);
+    if(k===which){
+      var show = el.style.display==='none';
+      el.style.display = show ? 'block' : 'none';
+      if(show){
+        if(which==='paper'){ gid('p_date').value=todayStr_(); gid('p_file').value=''; }
+        if(which==='leave'){ gid('q_from').value=todayStr_(); gid('q_to').value=todayStr_(); }
+        el.scrollIntoView({behavior:'smooth',block:'center'});
+      }
+    } else el.style.display='none';
+  });
+}
+function submitPaper(){
+  var date=gv('p_date'); if(!date){ toast('er','حدد التاريخ'); return; }
+  var inp=gid('p_file'); if(!inp.files || !inp.files[0]){ toast('er','اختر صورة الورقة الأول'); return; }
+  var btn=gid('paperBtn'); busy_(btn,true,'جاري الرفع...');
+  readImg(inp, function(data){
+    if(!data){ busy_(btn,false); toast('er','⚠️ الصورة كبيرة جدًا أو الملف تالف — جرّب صورة تانية'); return; }
+    google.script.run
+      .withSuccessHandler(function(rz){ busy_(btn,false); toast(rz.ok?'ok':'er', rz.msg); if(rz.ok){ toggleQuick('paper'); loadLog(); loadStats(); } })
+      .withFailureHandler(function(e){ busy_(btn,false); toast('er','❌ '+msgOf(e)); })
+      .uploadOvertimePaper(date, data);
+  });
+}
+function submitQuickLeave(){
+  var from=gv('q_from'), to=gv('q_to'); if(!from || !to){ toast('er','حدد التاريخ'); return; }
+  var btn=gid('leaveBtn'); busy_(btn,true);
+  google.script.run
+    .withSuccessHandler(function(rz){ busy_(btn,false); toast(rz.ok?'ok':'er', rz.msg); if(rz.ok){ toggleQuick('leave'); loadStats(); loadLog(); offerUndo(); } })
+    .withFailureHandler(function(e){ busy_(btn,false); toast('er','❌ '+msgOf(e)); })
+    .addManualLeave({from:from, to:to, type:gv('q_type')});
+}
+
+// لما ترجع للتطبيق: ابعت اللي اتسجّل أوفلاين + حدّث الرئيسية (بحد أدنى 20 ثانية بين كل تحديث)
+document.addEventListener('visibilitychange',function(){
+  if(document.hidden) return;
+  hdrDate_(); oqFlush_();
+  if(gid('p-home').classList.contains('on') && Date.now()-_lastStats>20000) loadStats();
+});
+
+// ═══ التوست ═══
+function toast(t,m){
+  var old=document.querySelector('.toast'); if(old) old.remove();
+  var d=document.createElement('div'); d.className='toast '+t; d.setAttribute('role', t==='er'?'alert':'status'); d.textContent=m;
+  document.body.appendChild(d);
+  setTimeout(function(){ if(d.parentNode) d.remove(); }, t==='er'?6000:3500);
+}
+
+renderCachedBoot_();
+window.addEventListener('scroll',function(){ var h=document.querySelector('.hdr'); if(h) h.classList.toggle('scrolled', window.scrollY>8); },{passive:true});
+</script>
+</body>
+</html>
